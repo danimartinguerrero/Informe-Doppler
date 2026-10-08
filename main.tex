@@ -376,17 +376,17 @@ $\mathrm{R}_1$ una menor.
       \draw[cB!\o!cA, line width=0.9pt] (\c,0) circle (\r);}
     \foreach \c/\n in {\cA/0,\cB/1,\cC/2,\cD/3}{
       \fill[cS] (\c,0) circle (2.3pt) node[below=3pt, text=cS] {$x_{\n}$};}
-    \node[text=cS, above=4pt] at (\cD,0) {$\mathrm{S}$};
-    \fill[cB] (-4.7,0) circle (3pt) node[below=4pt, text=cB] {$\mathrm{R}_1$};
-    \fill[cB] (3.55,0) circle (3pt) node[below=4pt, text=cB] {$\mathrm{R}_2$};
+    \node[text=cS, above=11pt, fill=white, inner sep=1.5pt] at (\cD,0) {$\mathrm{S}$};
+    \fill[cB] (-4.7,0) circle (3pt) node[below=4pt, text=cB, fill=white, inner sep=1.5pt] {$\mathrm{R}_1$};
+    \fill[cB] (4.15,0) circle (3pt) node[below=4pt, text=cB, fill=white, inner sep=1.5pt] {$\mathrm{R}_2$};
     \draw[->, dashed, grispizarra] (\cA,0) -- ++(110:\rA)
       node[midway, left=2pt, fill=white, inner sep=1pt, text=black!80] {$r_0$};
     \draw[->, dashed, grispizarra] (\cB,0) -- ++(80:\rB)
       node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_1$};
-    \draw[->, dashed, grispizarra] (\cC,0) -- ++(50:\rC)
-      node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_2$};
-    \draw[->, dashed, grispizarra] (\cD,0) -- ++(20:\rD)
-      node[midway, above=1pt, fill=white, inner sep=1pt, text=black!80] {$r_3$};
+    \draw[->, dashed, grispizarra] (\cC,0) -- ++(125:\rC)
+      node[midway, left=1pt, fill=white, inner sep=1pt, text=black!80] {$r_2$};
+    \draw[->, dashed, grispizarra] (\cD,0) -- ++(55:\rD)
+      node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_3$};
     \draw[->, line width=0.9pt, cS] (\cD-0.6,-1.7) -- ++(1.2,0)
       node[midway, below=1pt] {$\vE$};
     \node[anchor=west, align=left, text=black!80] at (-5.7,2.45)
