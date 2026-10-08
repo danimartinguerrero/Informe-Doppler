@@ -1,0 +1,66 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Plantilla de Portada (Tipografía clásica de LaTeX)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{titlepage}
+
+% Márgenes de esta página modificados para un encuadre perfecto y simétrico
+\newgeometry{top=3cm,bottom=3cm,outer=2.5cm,inner=2.5cm}
+\thispagestyle{empty}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Universidad, facultad y titulación
+\begin{center}
+    {\rmfamily\scshape\fontsize{20pt}{25pt}\selectfont \Universidad}\\[0.5cm]
+    {\rmfamily\bfseries\fontsize{14pt}{17pt}\selectfont \MakeUppercase\Facultad}\\[0.4cm] 
+    {\rmfamily\bfseries\fontsize{13pt}{16pt}\selectfont \Titulacion}\\[0.3cm]
+    \rule{\textwidth}{1.5pt} % Línea divisoria superior gruesa
+\end{center}
+
+\vfill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Logotipos perfectamente distribuidos
+\begin{center}
+    \includegraphics[width=7.5cm]{Logo USAL.png}
+    
+    \vspace{1.5cm} 
+    
+    \includegraphics[width=7.5cm]{Logo Facultad de Ciencias.png}
+\end{center}
+
+\vfill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Título de la Asignatura y Práctica
+\begin{center}
+    \rule{0.85\textwidth}{1pt}\\[1.15cm]
+    {\rmfamily\bfseries\fontsize{22pt}{28pt}\selectfont
+    Laboratorio de Mecánica y Ondas}\\[0.7cm]
+    \rule{0.85\textwidth}{1pt}\\[0.9cm]
+    {\rmfamily\bfseries\fontsize{18pt}{24pt}\selectfont
+    Práctica 8: efecto Doppler con ultrasonidos}
+\end{center}
+
+\vfill
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tipo, Autores y Tutores (Alineados a la derecha sin superposiciones)
+\begin{flushright}
+    \begin{minipage}{7.5cm}
+        \begin{flushleft}
+            % Tipo trabajo
+            {\rmfamily\bfseries\itshape\fontsize{12pt}{14pt}\selectfont \MakeUppercase\tipotrabajo}\\[0.5cm]
+            % Autores
+            {\rmfamily\fontsize{12pt}{14pt}\selectfont Autores:}\\ 
+            {\rmfamily\bfseries\fontsize{12pt}{14pt}\selectfont \miNombre}\\[0.5cm]
+            % Tutores
+            {\rmfamily\fontsize{12pt}{14pt}\selectfont Tutores:}\\
+            {\rmfamily\bfseries\fontsize{12pt}{14pt}\selectfont \miTutor}\\[0.5cm]
+            % Localidad y Fecha
+            {\rmfamily\bfseries\itshape\fontsize{12pt}{14pt}\selectfont \MakeUppercase \miUbicacion, \number\year}
+        \end{flushleft}
+    \end{minipage}
+\end{flushright}
+
+\end{titlepage} % Fin de portada

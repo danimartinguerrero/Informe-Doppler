@@ -1,0 +1,416 @@
+\documentclass[a4paper,11pt]{article}
+
+% =========================================================================
+%                                PAQUETES
+% =========================================================================
+
+% --- IDIOMA Y CODIFICACIÓN ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+
+% --- MATEMÁTICAS Y FÍSICA ---
+\usepackage{amsmath, amsfonts, amssymb, mathtools}
+\usepackage{amsthm} 
+\usepackage{cancel} 
+\usepackage{esint}  
+\usepackage{empheq} 
+\usepackage{physics}
+\usepackage{siunitx}
+\usepackage{subcaption}
+\usepackage{caption}
+
+% --- DISEÑO Y GRÁFICOS ---
+\usepackage{geometry}
+\geometry{left=2.5cm, right=2.5cm, top=3cm, bottom=3cm}
+\usepackage{graphicx}
+\usepackage{float}    
+\usepackage[table]{xcolor}
+\usepackage{tikz}     
+\usetikzlibrary{babel, arrows.meta, calc, positioning, 3d, decorations.markings, patterns, shadings, angles, quotes, matrix}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{array}
+\usepackage{textpos}
+\usepackage{setspace}
+\usepackage{multirow}
+
+% --- CONFIGURACIÓN DE PÁRRAFO, TABLAS E INTERLINEADO ---
+\usepackage{cellspace}
+\setlength{\parskip}{0.6em}
+\setlength{\parindent}{0pt}
+\setstretch{1.15} % Interlineado ampliado para un aspecto más limpio y formal
+\renewcommand{\arraystretch}{1.5} 
+\setlength\cellspacetoplimit{10pt}   
+\setlength\cellspacebottomlimit{10pt}
+
+% --- ENCABEZADO Y PIE DE PÁGINA ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} 
+\fancyhead[L]{\textit{Laboratorio de Mecánica y Ondas}}
+\fancyhead[R]{Práctica 8: Efecto Doppler}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- SECCIONES Y SUBSECCIONES ---
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+
+% --- NAVEGACIÓN ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue!70!black,
+    citecolor=blue,
+    urlcolor=blue
+}
+
+% =========================================================================
+%                        ENTORNOS PERSONALIZADOS
+% =========================================================================
+% Estética minimalista de artículo científico: líneas laterales, tonos sobrios y sin bordes cerrados.
+
+\newtcolorbox{resultado}[1]{
+    enhanced,
+    breakable,
+    frame hidden,
+    interior hidden,
+    boxrule=0pt,
+    leftrule=3pt,
+    arc=0pt,
+    colframe=blue!60!black,
+    colback=blue!2!white,
+    fonttitle=\bfseries\sffamily,
+    coltitle=blue!60!black,
+    title={#1},
+    before skip=14pt,
+    after skip=14pt,
+    left=12pt, right=10pt, top=4pt, bottom=4pt,
+    attach title to upper=\par\vspace{0.4em}
+}
+
+\newtcolorbox{nota}[1]{
+    enhanced,
+    breakable,
+    frame hidden,
+    interior hidden,
+    boxrule=0pt,
+    leftrule=2pt,
+    arc=0pt,
+    colframe=gray!70!blue,
+    colback=white,
+    fonttitle=\bfseries\sffamily,
+    coltitle=gray!70!blue,
+    title={Nota: #1},
+    before skip=12pt,
+    after skip=12pt,
+    left=12pt, right=10pt, top=4pt, bottom=4pt,
+    attach title to upper=\par\vspace{0.3em}
+}
+
+\newtcolorbox{referencia}[1]{
+    enhanced,
+    breakable,
+    frame hidden,
+    interior hidden,
+    boxrule=0pt,
+    leftrule=3pt,
+    arc=0pt,
+    colframe=blue!70!black,
+    colback=blue!3!white,
+    fonttitle=\bfseries\sffamily,
+    coltitle=blue!70!black,
+    fontupper=\itshape, % Fuerza la cursiva en todo el texto del entorno
+    title={#1},
+    before skip=14pt,
+    after skip=14pt,
+    left=12pt, right=12pt, top=6pt, bottom=6pt,
+    attach title to upper=\par\vspace{0.3em}
+}
+
+% =========================================================================
+%                     VARIABLES PARA LA PORTADA
+% =========================================================================
+
+\newcommand{\Universidad}{Universidad de Salamanca}
+\newcommand{\LogoUniversidad}{logos-universidad/USAL}
+\newcommand{\Facultad}{Facultad de Ciencias}
+\newcommand{\LogoFacultad}{logos-universidad/logo}
+\newcommand{\Titulacion}{Grado en Física}
+\newcommand{\titulo}{Laboratorio de Mecánica y Ondas\\Práctica 8: Efecto Doppler}
+\newcommand{\tipotrabajo}{Informe de laboratorio}
+\newcommand{\miNombre}{David Gómez García \\ Daniel Martín Guerrero}
+\newcommand{\miTutor}{Mario Amado \\ Ivan de Martino \\ Manuel Pino}
+\newcommand{\miUbicacion}{Salamanca}
+
+% =========================================================================
+%                                DOCUMENTO
+% =========================================================================
+
+\setlength{\headheight}{13.6pt}
+\begin{document}
+
+% --- PORTADA ---
+\input{portada_bn} 
+\restoregeometry
+
+% --- ÍNDICE ---
+\newpage
+\tableofcontents
+\newpage
+
+% --- CONTENIDO ---
+\section{Introducción}
+La experiencia y su posterior análisis recogidos en este informe presentan como temática nuclear un fenómeno físico conocido como efecto Doppler.
+
+\subsection{Objetivos}
+\begin{itemize}
+    \item Hallar la velocidad con la que se propagan ondas ultrasonidos en un medio como el aire.
+    \item Evidenciar y calcular las diferencias entre la frecuencia emitida y recibida ante varias situaciones dinámicas del emisor y receptor.
+\end{itemize}
+
+\subsection{Material empleado}
+Para el correcto desarrollo del montaje experimental, se ha hecho uso del siguiente instrumental:
+
+\vspace{0.4cm} 
+\begin{figure}[H]
+    % --- Columna izquierda para la lista y la explicación ---
+    \begin{minipage}[t]{0.35\textwidth}
+        \vspace{0pt}
+        \begin{itemize}
+            \item Unidad de emisión y detección de ultrasonidos.
+            \item Carril y coche autopropulsado.
+            \item Emisor, receptor y soportes.
+            \item Barrera fotoeléctrica y temporizador.
+            \item Ordenador y unidad de medida Cobra-3.
+        \end{itemize}
+        
+        \vspace{0.4cm}
+        
+        
+    \end{minipage}%
+    \hfill 
+    % --- Columna derecha para la imagen con pie de foto reducido ---
+    \begin{minipage}[t]{0.6\textwidth}
+        \vspace{0pt}
+        \centering
+        \includegraphics[width=\textwidth]{} 
+        \caption{Montaje experimental empleado.}
+        \label{fig:montaje_experimental}
+    \end{minipage}
+\end{figure}
+
+\subsection{Fundamentos teóricos}
+
+\begin{referencia}{Efecto Doppler}
+El efecto Doppler es un fenómeno físico que describe el cambio en la frecuencia percibida de una onda cuando la fuente emisora de la onda y el observador están en movimiento relativo 
+entre sí. Este cambio de frecuencia no se debe a una modificación real de la frecuencia de la 
+onda emitida, sino a un cambio en la forma en que el observador percibe la onda debido al 
+movimiento. 
+La causa del efecto Doppler radica en la compresión o dilatación de las ondas debida al 
+movimiento relativo entre la fuente y el observador. Si la fuente se mueve hacia el 
+observador, las ondas se comprimen, lo que resulta en una longitud de onda más corta y una 
+frecuencia percibida más alta. Si la fuente se aleja, las ondas se dilatan, lo que resulta en una 
+longitud de onda más larga y una frecuencia percibida más baja. El efecto Doppler se aplica 
+a cualquier tipo de onda, incluyendo ondas sonoras, ondas de luz, ondas de agua, etc. 
+
+Si la fuente se acerca al observador ($v_s>0$), la longitud de onda se acorta y la frecuencia se hace mayor. En ondas de sonido se aprecia una frecuencia más aguda. Por el contrario, si el emisor se aleja del receptor ($v_s<0$), la longitud de onda 
+aparente es mayor y la frecuencia menor. El sonido se hace más grave. 
+\cite{FV6-ECJ}
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[font=\sffamily, >=stealth, scale=0.85, every node/.style={scale=0.9}]
+        
+        % ==========================================
+        % PANEL IZQUIERDO: FRENTES DE ONDA ESPACIALES
+        % ==========================================
+        \begin{scope}[shift={(0,0)}]
+            % Eje espacial
+            \draw[->, thick, gray!80] (-5.5, 0) -- (4.5, 0) node[right, text=black] {$x$};
+            
+            % Definición de radios y centros (simulando v_s y v_onda)
+            \def\rA{3.8} \def\cA{0}
+            \def\rB{2.8} \def\cB{0.7}
+            \def\rC{1.8} \def\cC{1.4}
+            \def\rD{0.8} \def\cD{2.1}
+            
+            % Trazado de los frentes de onda (circunferencias)
+            \draw[thick, gray!70] (\cA,0) circle (\rA);
+            \draw[thick, gray!70] (\cB,0) circle (\rB);
+            \draw[thick, gray!70] (\cC,0) circle (\rC);
+            \draw[thick, gray!70] (\cD,0) circle (\rD);
+            
+            % Posiciones sucesivas de la fuente
+            \fill[teal!80!black] (\cA,0) circle (2.5pt) node[below=2pt] {$x_0$};
+            \fill[teal!80!black] (\cB,0) circle (2.5pt) node[below=2pt] {$x_1$};
+            \fill[teal!80!black] (\cC,0) circle (2.5pt) node[below=2pt] {$x_2$};
+            \fill[teal!80!black] (\cD,0) circle (2.5pt) node[below=2pt] {$x_3$};
+            \node[teal!80!black, above=4pt] at (\cA,0) {\textbf{S}};
+            
+            % Receptores
+            \fill[magenta!80!black] (-4.5,0) circle (3pt) node[below=4pt] {$R_1$};
+            \fill[blue!80!black] (3.5,0) circle (3pt) node[below=4pt] {$R_2$};
+            
+            % Vectores de radio
+            \draw[->, dashed, gray!90] (\cA,0) -- ++(110:\rA) node[midway, left=2pt, fill=white, inner sep=1pt, text=black!80] {$r_0$};
+            \draw[->, dashed, gray!90] (\cB,0) -- ++(80:\rB) node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_1$};
+            \draw[->, dashed, gray!90] (\cC,0) -- ++(50:\rC) node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_2$};
+            \draw[->, dashed, gray!90] (\cD,0) -- ++(20:\rD) node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_3$};
+            
+            % Ecuaciones paramétricas (Radios)
+            \node[anchor=east, align=right, text=black!80] at (-5.5, 2.5) {
+                $r_0 = v(t - t_0)$\\
+                $r_1 = v(t - t_1)$\\
+                $r_2 = v(t - t_2)$\\
+                $r_3 = v(t - t_3)$
+            };
+            
+            % Ecuaciones paramétricas (Posiciones de la fuente)
+            \node[anchor=east, align=right, text=black!80] at (-5.5, -2.2) {
+                $x_0 = v_s t_0$\\
+                $x_1 = v_s t_1$\\
+                $x_2 = v_s t_2$\\
+                $x_3 = v_s t_3$
+            };
+        \end{scope}
+
+        % ==========================================
+        % PANEL DERECHO: GRÁFICAS TEMPORALES
+        % ==========================================
+        \begin{scope}[shift={(6.5, 0)}]
+            \def\w{5.5}  % Ancho de las gráficas
+            \def\ha{1.2} % Semiamplitud
+            
+            % Gráfica 1: Onda emitida por S
+            \begin{scope}[shift={(0, 3)}]
+                \draw[black!15, thin, step=0.5] (0, -\ha) grid (\w, \ha);
+                \draw[->, thick, gray!80] (0,0) -- (\w+0.5, 0);
+                \draw[->, thick, gray!80] (0,-\ha-0.2) -- (0, \ha+0.2) node[left, text=black!80] {Amp.};
+                \draw[teal!80!black, thick, domain=0:\w, samples=150] plot (\x, {0.9*sin(\x*180*1.5)});
+                \node[draw=teal!80!black, fill=white, text=teal!80!black, rounded corners=2pt, inner sep=3pt] at (\w-0.5, \ha-0.2) {\textbf{S}};
+            \end{scope}
+            
+            % Gráfica 2: Onda percibida por R1 (Frecuencia menor)
+            \begin{scope}[shift={(0, 0)}]
+                \draw[black!15, thin, step=0.5] (0, -\ha) grid (\w, \ha);
+                \draw[->, thick, gray!80] (0,0) -- (\w+0.5, 0);
+                \draw[->, thick, gray!80] (0,-\ha-0.2) -- (0, \ha+0.2) node[left, text=black!80] {Amp.};
+                \def\start{1.8} % Retardo de llegada
+                \draw[magenta!80!black, thick] (0,0) -- (\start, 0);
+                \draw[magenta!80!black, thick, domain=\start:\w, samples=100] plot (\x, {0.9*sin((\x-\start)*180*0.9)});
+                \node[draw=magenta!80!black, fill=white, text=magenta!80!black, rounded corners=2pt, inner sep=3pt] at (\w-0.5, \ha-0.2) {\textbf{$R_1$}};
+            \end{scope}
+            
+            % Gráfica 3: Onda percibida por R2 (Frecuencia mayor)
+            \begin{scope}[shift={(0, -3)}]
+                \draw[black!15, thin, step=0.5] (0, -\ha) grid (\w, \ha);
+                \draw[->, thick, gray!80] (0,0) -- (\w+0.5, 0) node[below, text=black] {Tiempo};
+                \draw[->, thick, gray!80] (0,-\ha-0.2) -- (0, \ha+0.2) node[left, text=black!80] {Amp.};
+                \def\start{0.8} % Retardo de llegada
+                \draw[blue!80!black, thick] (0,0) -- (\start, 0);
+                \draw[blue!80!black, thick, domain=\start:\w, samples=150] plot (\x, {0.9*sin((\x-\start)*180*2.5)});
+                \node[draw=blue!80!black, fill=white, text=blue!80!black, rounded corners=2pt, inner sep=3pt] at (\w-0.5, \ha-0.2) {\textbf{$R_2$}};
+            \end{scope}
+        \end{scope}
+    \end{tikzpicture}
+    }%
+    \caption{Esquema del efecto Doppler generado por una fuente \textbf{S} en movimiento a velocidad $v_s$. A la izquierda se representan los frentes de onda espaciales emitidos en distintos instantes, lo que evidencia la compresión en la dirección del movimiento y la dilatación en la opuesta. A la derecha, las gráficas temporales comparan la onda emitida con las señales desfasadas percibidas por los receptores $R_1$ y $R_2$.}
+    \label{fig:doppler_frentes}
+\end{figure}
+\end{referencia}
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[font=\sffamily, >=stealth, scale=1.2]
+        
+        % ==========================================
+        % EJE DE REFERENCIA ESPACIAL
+        % ==========================================
+        \draw[->, gray!40, thin] (-2, 0) -- (10, 0) node[right, text=gray!80, scale=0.9] {$x$};
+        
+        % ==========================================
+        % ONDA PRINCIPAL (Nuevo tono: cyan!70!black)
+        % ==========================================
+        \draw[cyan!70!black, thick, densely dashed, domain=-1.5:1, samples=50] plot (\x, {sin(\x*180)});
+        \draw[cyan!70!black, thick, densely dashed, domain=7:9.5, samples=50] plot (\x, {sin(\x*180)});
+        
+        % Zona continua central
+        \draw[cyan!70!black, very thick, domain=1:7, samples=150] plot (\x, {sin(\x*180)});
+        
+        % ==========================================
+        % MARCADORES DE EMISOR Y RECEPTOR
+        % ==========================================
+        \draw[thick, gray!60, densely dotted] (1, -1.4) -- (1, 1.4);
+        \node[draw=gray!50, fill=white, rounded corners=3pt, font=\bfseries\sffamily\small, text=gray!80!black, inner sep=4pt] at (1, 1.7) {emisor};
+        
+        \draw[thick, gray!60, densely dotted] (7, -1.4) -- (7, 1.4);
+        \node[draw=gray!50, fill=white, rounded corners=3pt, font=\bfseries\sffamily\small, text=gray!80!black, inner sep=4pt] at (7, 1.7) {receptor};
+        
+        % ==========================================
+        % VECTORES DE VELOCIDAD RELATIVA
+        % ==========================================
+        \draw[->, thick, gray!80!black] (1.0, -1.7) -- (0.0, -1.7) node[midway, below] {$v_E - v_s$};
+        \draw[->, thick, gray!80!black] (7.0, -1.7) -- (6.0, -1.7) node[midway, below] {$v_R - v_s$};
+        
+        % ==========================================
+        % ACOTACIÓN DE LA LONGITUD DE ONDA
+        % ==========================================
+        \draw[gray!50, thin] (2.5, 1.1) -- (2.5, 1.6);
+        \draw[gray!50, thin] (4.5, 1.1) -- (4.5, 1.6);
+        \draw[|<->|, thick, cyan!70!black] (2.5, 1.45) -- (4.5, 1.45) node[midway, fill=white, inner sep=2pt] {$\lambda$};
+        
+    \end{tikzpicture}
+    \caption{Movimientos relativos del emisor y del receptor en el sistema de referencia de la onda, asumiendo $u > v_E, v_R$. Se toma el sentido positivo de propagación de izquierda a derecha.}
+    \label{fig:doppler_relativo}
+\end{figure}
+
+
+\newpage
+\section{Procedimiento experimental}
+ En primer lugar se ha comenzado la experiencia midiendo el valor de la temperatura del aire, $T= \text{º }C$, a fin de determinar el valor teórico o valor esperado de la velocidad del sonido en el aire ($\tilde{v_s})$.
+\begin{equation}
+    \tilde{v_{s}} = 331,3 \sqrt{1+\frac{T}{273,15}}\unit{\meter\per\second})
+    \label{eq:vs}
+\end{equation}
+\subsection{Tratamiento de incertidumbres}
+\begin{resultado}{Incertidumbre de la lectura térmica}
+    
+
+Obtenida la lectura de temperatura, $T$, con una resolución del termómetro $\Delta = 0,1  \text{º }C$, se procede a calcular la incertidumbre asociada a dicha medida:
+\[\sigma^2 = \frac{\Delta^2}{12} \xrightarrow{} u(x) = \frac{\Delta}{\sqrt{12}} \approx
+0,03  \text{º }C\] 
+En consecuencia, el registro térmico al comienzo de la experiencia ha sido $T = t \pm 0,03  \textbf{º }C$.
+\end{resultado}
+\begin{resultado}{Incertidumbre de la velocidad del sonido}
+
+Determinar la incertidumbre asociada a la lectura de la temperatura es un paso clave antes de poder hallar por propagación la incertidumbre propia de $\tilde{v_{s}}$.
+\begin{equation*}
+    u^2(\tilde{v_s}) = \left (\frac{\partial \tilde{v_s}}{\partial T}\right )^{\!2} u^2(T)
+\end{equation*}
+Para calcular la derivada parcial nos apoyamos en la dependencia térmica de la velocidad del sonido en el aire [\ref{eq:vs}].
+Realizando la derivada parcial respecto de la temperatura evaluada para el valor experimental:
+\begin{equation*}
+    \frac{\partial v_s}{\partial T} = \frac{331.3}{2 \cdot 273.15 \sqrt{1 + \frac{T}{273.15}}} = \frac{331.3}{546.3 \sqrt{1 + \frac{T}{273.15}}} 
+\end{equation*}
+
+Si se sustituye este resultado en la expresión que permite calcular la incertidumbre, y calculamos su raíz cuadrda:
+\begin{equation*}
+    u (v_s) = \sqrt{\left (\frac{\partial v_s}{\partial T}\right)^{\!2} u^2(T)} = \sqrt{\left (\frac{\partial v_s}{\partial T}\right)^{\!2} \left(\frac{0,1}{\sqrt{12}}\right)^{\!2}} \approx error \, \unit{\meter\per\second}
+\end{equation*}
+
+Luego, se espera que la velocidad del sonido en el aire para las condiciones en las que se ha encontrado el laboratoria sea:
+
+\[\tilde{v_s} = \tilde{vs} \pm error\,\unit{\meter\per\second}\]
+
+\end{resultado}
+
+% --- BIBLIOGRAFÍA ---
+\newpage
+\bibliographystyle{plain}
+\bibliography{referencias}
+
+\end{document}
