@@ -34,13 +34,15 @@
     % trayectoria de la fuente y posición actual
     \draw[azulprof, densely dotted, line width=0.5pt]
       ($(O)+(8.2cm,17.2cm)$) -- ($(O)+(13.24cm,17.2cm)$);
-    \draw[azulprof, -{Stealth[length=5pt]}, line width=0.9pt]
-      ($(O)+(13.24cm,17.2cm)$) -- ($(O)+(14.9cm,17.2cm)$);
-    \fill[azulprof] ($(O)+(13.24cm,17.2cm)$) circle (3.2pt);
-    \node[azulprof, anchor=south, inner sep=2pt, font=\itshape\normalsize]
-      at ($(O)+(12.75cm,17.3cm)$) {fuente S};
-    \node[azulprof, anchor=north, inner sep=2pt, font=\normalsize]
-      at ($(O)+(14.1cm,17.12cm)$) {$v_{\mathrm{E}}$};
+    \draw[azulprof, -{Stealth[length=7pt]}, line width=1.2pt]
+      ($(O)+(13.24cm,17.2cm)$) -- ($(O)+(15.5cm,17.2cm)$);
+    \fill[azulprof] ($(O)+(13.24cm,17.2cm)$) circle (3.8pt);
+    \node[azulprof, anchor=south, inner sep=2.5pt, fill=white, fill opacity=0.85,
+          text opacity=1, font=\itshape\large]
+      at ($(O)+(13.24cm,17.45cm)$) {fuente $\mathrm{S}$};
+    \node[azulprof, anchor=north, inner sep=2.5pt, fill=white, fill opacity=0.85,
+          text opacity=1, font=\large]
+      at ($(O)+(14.35cm,17.0cm)$) {$v_{\mathrm{E}}$};
   \end{scope}
 
   % ----------------------------------------------------------------
@@ -73,24 +75,14 @@
       plot ({\x}, {12.95 + 0.33*sin(deg((\x-2.2)*(2.2+0.58*(\x-2.2))))});
   \end{scope}
 
-  \node[anchor=south west, inner sep=0, text=azulacero, font=\scshape\large,
-        text width=16.6cm]
-    at ($(O)+(2.2cm,11.2cm)$)
-    {\textls[120]{\Asignatura\ \textbar\ \NumPractica}};
-
-  \node[anchor=north west, inner sep=0, text=azulprof, text width=16.6cm,
-        align=left]
-    at ($(O)+(2.2cm,11.0cm)$)
-    {\fontsize{35}{39}\selectfont\bfseries\TituloPractica};
-
-  \draw[azulacero, line width=1.4pt]
-    ($(O)+(2.2cm,7.35cm)$) -- ($(O)+(4.7cm,7.35cm)$);
-
-  \node[anchor=north west, inner sep=0, text=grispizarra, text width=16.6cm,
-        align=left, font=\itshape\large]
-    at ($(O)+(2.2cm,7.05cm)$)
-    {$\displaystyle f_{\mathrm{R}} \;=\; f_{\mathrm{E}}\,
-      \frac{v_{\mathrm{s}}-v_{\mathrm{R}}}{v_{\mathrm{s}}-v_{\mathrm{E}}}$};
+  \node[anchor=north west, inner sep=0, text width=16.6cm, align=left]
+    at ($(O)+(2.2cm,12.0cm)$)
+    {{\color{azulacero}\scshape\large\textls[120]{\Asignatura\ \textbar\ \NumPractica}}\\[12pt]
+     {\color{azulprof}\fontsize{35}{39}\selectfont\bfseries\TituloPractica}\\[14pt]
+     {\color{azulacero}\rule{2.5cm}{1.4pt}}\\[9pt]
+     {\color{grispizarra}\itshape\large
+      $\displaystyle f_{\mathrm{R}} \;=\; f_{\mathrm{E}}\,
+       \frac{v_{\mathrm{s}}-v_{\mathrm{R}}}{v_{\mathrm{s}}-v_{\mathrm{E}}}$}};
 
   % ----------------------------------------------------------------
   % Pie: tipo de trabajo, autores, tutores, lugar y fecha

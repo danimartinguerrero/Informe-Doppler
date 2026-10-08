@@ -42,6 +42,8 @@
 \usepackage{tikz}
 \usetikzlibrary{babel, arrows.meta, calc, positioning, decorations.pathmorphing,
                 decorations.markings, patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{enumitem}
@@ -488,6 +490,40 @@ sonido.
 Para $|v/\vs|\ll1$ ambos casos coinciden a primer orden y solo difieren en el
 término cuadrático de la \cref{eq:receptor}, cuya observabilidad se analiza al
 final del informe.
+
+La \cref{fig:cuadratico} compara ambas leyes.
+
+\begin{figure}[ht]
+\centering
+\pgfplotsset{
+  doppler/.style={
+    width=0.40\textwidth, height=5.4cm, tick label style={font=\scriptsize},
+    label style={font=\small}, axis lines=left, axis line style={grispizarra},
+    grid=major, grid style={grisclaro, line width=0.4pt}, every tick/.style={grispizarra},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.85,
+                  text opacity=1, at={(0.03,0.97)}, anchor=north west},
+    xlabel={$x=v/\vs$}, xmin=-0.3, xmax=0.3, xtick={-0.3,-0.15,0,0.15,0.3}}}
+\begin{tikzpicture}
+  \begin{axis}[doppler, ylabel={$\fR/\fE$}, ymin=0.6, ymax=1.5]
+    \addplot[azulprof, line width=1pt, domain=-0.3:0.3, samples=100] {1/(1-x)};
+    \addplot[azulacero, line width=1pt, dashed, domain=-0.3:0.3, samples=2] {1+x};
+    \legend{emisor móvil \eqref{eq:emisor},receptor móvil \eqref{eq:receptor}}
+  \end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+  \begin{axis}[doppler, ylabel={$\bigl(\fR-\fE/(1-x)\bigr)/\fE$}, ymin=-0.14, ymax=0.01,
+               scaled y ticks=false, yticklabel style={/pgf/number format/fixed,
+               /pgf/number format/precision=2}]
+    \addplot[azulprof, line width=1pt, domain=-0.3:0.3, samples=100] {-x^2/(1-x)};
+    \addplot[grispizarra, line width=0.7pt, densely dashed, domain=-0.3:0.3, samples=2] {0};
+  \end{axis}
+\end{tikzpicture}
+\caption{Emisor móvil frente a receptor móvil. (Izquierda) $\fR/\fE$ en función
+de $x=v/\vs$. (Derecha) Diferencia relativa entre ambas leyes, igual a
+$-x^{2}/(1-x)$ y nula para el emisor móvil por construcción. El rango de $x$ se
+ha ampliado con fines ilustrativos; en el laboratorio $|x|\ll1$.}
+\label{fig:cuadratico}
+\end{figure}
 
 % =========================================================================
 \section{Procedimiento experimental}\label{sec:procedimiento}
