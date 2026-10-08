@@ -1,0 +1,958 @@
+\documentclass[a4paper,11pt]{amsart}
+
+% =========================================================================
+%  Informe de laboratorio — Práctica 8: Efecto Doppler con ultrasonidos
+%  Estilo: artículo científico minimalista (tipografía Palatino, versalitas,
+%  enunciados numerados por sección), paleta de azules y grises sobrios.
+% =========================================================================
+
+% --- IDIOMA Y CODIFICACIÓN ------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
+
+% --- TIPOGRAFÍA (Palatino, como el documento de referencia) ---------------
+\usepackage{mathpazo}
+\linespread{1.05}
+\usepackage[final]{microtype}
+
+% --- MATEMÁTICAS Y UNIDADES ------------------------------------------------
+\usepackage{amsmath, amssymb, mathtools}
+\usepackage{bm}
+\usepackage{siunitx}
+\sisetup{
+  output-decimal-marker = {,},
+  group-minimum-digits  = 4,
+  group-separator       = {\,},
+  per-mode              = symbol,
+  separate-uncertainty  = true,
+  range-phrase          = {\text{ a }},
+  detect-all            = false
+}
+
+% --- PÁGINA, COLORES Y GRÁFICOS --------------------------------------------
+\usepackage[a4paper,margin=2.6cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\definecolor{azulprof}{HTML}{1B365D}    % azul marino
+\definecolor{azulacero}{HTML}{3B6EA8}   % azul acero
+\definecolor{azulclaro}{HTML}{B7CBE3}   % azul hielo
+\definecolor{grispizarra}{HTML}{5B6770} % gris pizarra
+\definecolor{grisclaro}{HTML}{E4E8EC}   % gris perla
+\usepackage{tikz}
+\usetikzlibrary{babel, arrows.meta, calc, positioning, decorations.pathmorphing,
+                decorations.markings, patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{subcaption}
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.6em, itemsep=2pt, topsep=4pt}
+\setlist[enumerate]{leftmargin=1.8em, itemsep=2pt, topsep=4pt}
+
+% --- ENLACES Y REFERENCIAS CRUZADAS ----------------------------------------
+\usepackage[colorlinks=true, linkcolor=azulacero, citecolor=azulacero,
+            urlcolor=azulacero, plainpages=false, pdfusetitle=false,
+            pdftitle={Práctica 8: Efecto Doppler con ultrasonidos},
+            pdfauthor={David Gómez García; Daniel Martín Guerrero}]{hyperref}
+\usepackage[spanish,nameinlink]{cleveref}
+
+% --- BIBLIOGRAFÍA -----------------------------------------------------------
+\usepackage{csquotes}
+\usepackage[backend=biber, style=numeric, sorting=none, giveninits=true,
+            maxbibnames=6, minbibnames=3, doi=true, url=true,
+            isbn=false]{biblatex}
+\addbibresource{referencias.bib}
+\DeclareFieldFormat[article,techreport,unpublished]{title}{#1\isdot}
+\DeclareFieldFormat{url}{\url{#1}}
+\renewcommand*{\bibfont}{\small}
+\setlength{\bibitemsep}{3pt}
+
+% --- CABECERAS ---------------------------------------------------------------
+\pagestyle{headings}
+\makeatletter
+\def\@evenhead{\small\scshape\thepage\hfil Laboratorio de Mecánica y Ondas\hfil}
+\def\@oddhead{\small\scshape\hfil Práctica 8: Efecto Doppler con ultrasonidos\hfil\thepage}
+\def\ps@headings{%
+  \let\@mkboth\markboth
+  \def\@evenhead{\small\scshape\normalfont\thepage\hfil Laboratorio de Mecánica y Ondas}%
+  \def\@oddhead{\small\scshape\normalfont Efecto Doppler con ultrasonidos\hfil\thepage}%
+  \let\@evenfoot\@empty \let\@oddfoot\@empty}
+\makeatother
+\numberwithin{equation}{section}
+\setcounter{tocdepth}{1}
+\makeatletter
+\def\@@and{y}
+\renewcommand{\keywordsname}{Palabras clave}
+\makeatother
+
+% =========================================================================
+%               NOTACIÓN Y MACROS DE USO FRECUENTE
+% =========================================================================
+\newcommand{\vs}{v_{\mathrm{s}}}              % velocidad del sonido
+\newcommand{\vst}{\tilde{v}_{\mathrm{s}}}     % valor teórico esperado
+\newcommand{\vE}{v_{\mathrm{E}}}              % velocidad del emisor
+\newcommand{\vR}{v_{\mathrm{R}}}              % velocidad del receptor
+\newcommand{\fE}{f_{\mathrm{E}}}              % frecuencia emitida
+\newcommand{\fR}{f_{\mathrm{R}}}              % frecuencia recibida
+\newcommand{\TE}{T_{\mathrm{E}}}
+\newcommand{\TR}{T_{\mathrm{R}}}
+\newcommand{\dif}{\mathrm{d}}
+\newcommand{\Tcoef}{t_{95,\nu}}               % factor de cobertura al 95 %
+\newcommand{\ext}[1]{U(#1)}                   % incertidumbre ampliada
+\newcommand{\mean}[1]{\overline{#1}}
+\DeclareMathOperator{\var}{var}
+\DeclareMathOperator{\cov}{cov}
+% Dato pendiente de incorporar (se resalta con discreción)
+\newcommand{\pend}[1]{\textcolor{grispizarra}{\colorbox{grisclaro}{\strut\,#1\,}}}
+\newcommand{\pendiente}[1]{\textcolor{grispizarra}{\textit{[#1]}}}
+
+% =========================================================================
+%        ENTORNOS FORMALES (enunciados numerados, estilo artículo)
+% =========================================================================
+\usepackage{amsthm}
+
+% Enunciados en cursiva (resultados generales)
+\newtheoremstyle{cienplano}{10pt}{10pt}{\itshape}{}%
+  {\bfseries\color{azulprof}}{.}{0.6em}%
+  {\thmname{#1}\thmnumber{ #2}\thmnote{\normalfont\upshape\ (#3)}}
+% Definiciones, cálculos y estimaciones (cuerpo en redonda)
+\newtheoremstyle{ciendef}{10pt}{10pt}{\normalfont}{}%
+  {\bfseries\color{azulprof}}{.}{0.6em}%
+  {\thmname{#1}\thmnumber{ #2}\thmnote{\normalfont\upshape\ (#3)}}
+% Observaciones (encabezado en cursiva)
+\newtheoremstyle{cienobs}{8pt}{8pt}{\normalfont}{}%
+  {\itshape\color{azulprof}}{.}{0.6em}%
+  {\thmname{#1}\thmnumber{ #2}\thmnote{\normalfont\upshape\ (#3)}}
+
+\theoremstyle{cienplano}
+\newtheorem{proposicion}{Proposición}[section]
+\newtheorem{resultado}[proposicion]{Resultado}
+\newtheorem{conclusion}[proposicion]{Conclusión}
+\theoremstyle{ciendef}
+\newtheorem{definicion}[proposicion]{Definición}
+\newtheorem{hipotesis}[proposicion]{Hipótesis}
+\newtheorem{calculo}[proposicion]{Cálculo de incertidumbre}
+\newtheorem{estimacion}[proposicion]{Estimación lineal}
+\theoremstyle{cienobs}
+\newtheorem{observacion}[proposicion]{Observación}
+
+\crefname{proposicion}{proposición}{proposiciones}
+\Crefname{proposicion}{Proposición}{Proposiciones}
+\crefname{resultado}{resultado}{resultados}
+\crefname{conclusion}{conclusión}{conclusiones}
+\crefname{definicion}{definición}{definiciones}
+\crefname{hipotesis}{hipótesis}{hipótesis}
+\crefname{calculo}{cálculo}{cálculos}
+\crefname{estimacion}{estimación}{estimaciones}
+\crefname{observacion}{observación}{observaciones}
+\crefname{section}{sección}{secciones}
+\Crefname{section}{Sección}{Secciones}
+\crefname{subsection}{sección}{secciones}
+\Crefname{subsection}{Sección}{Secciones}
+\crefname{table}{tabla}{tablas}
+\Crefname{table}{Tabla}{Tablas}
+\crefname{figure}{figura}{figuras}
+\Crefname{figure}{Figura}{Figuras}
+\crefname{equation}{ecuación}{ecuaciones}
+\Crefname{equation}{Ecuación}{Ecuaciones}
+\crefformat{equation}{ecuación~(#2#1#3)}
+\Crefformat{equation}{Ecuación~(#2#1#3)}
+\crefrangeformat{equation}{ecuaciones~(#3#1#4)--(#5#2#6)}
+\crefmultiformat{equation}{ecuaciones~(#2#1#3)}{ y~(#2#1#3)}{, (#2#1#3)}{ y~(#2#1#3)}
+
+% Pies de figura y tabla, en la línea del documento de referencia
+\usepackage[font=small, labelfont={sc,color=azulprof}, labelsep=period,
+            margin=0.6cm, justification=justified]{caption}
+\captionsetup[subfigure]{labelfont={sc}, skip=3pt}
+
+% =========================================================================
+%                     VARIABLES PARA LA PORTADA
+% =========================================================================
+\newcommand{\Universidad}{Universidad de Salamanca}
+\newcommand{\Facultad}{Facultad de Ciencias}
+\newcommand{\Titulacion}{Grado en Física}
+\newcommand{\Asignatura}{Laboratorio de Mecánica y Ondas}
+\newcommand{\NumPractica}{Práctica 8}
+\newcommand{\TituloPractica}{Efecto Doppler\\con ultrasonidos}
+\newcommand{\tipotrabajo}{Informe de laboratorio}
+\newcommand{\miNombre}{David Gómez García \\ Daniel Martín Guerrero}
+\newcommand{\miTutor}{Mario Amado \\ Ivan de Martino \\ Manuel Pino}
+\newcommand{\miUbicacion}{Salamanca}
+
+% =========================================================================
+%                     DATOS DEL ARTÍCULO (cabecera)
+% =========================================================================
+\title{Efecto Doppler con ultrasonidos}
+\author{David Gómez García}
+\author{Daniel Martín Guerrero}
+\address{Grado en Física, Facultad de Ciencias, Universidad de Salamanca,
+         Salamanca, España}
+\date{}
+\keywords{efecto Doppler, ultrasonidos, velocidad del sonido,
+          incertidumbre de medida, ajuste por mínimos cuadrados}
+
+
+
+% =========================================================================
+%                                DOCUMENTO
+% =========================================================================
+\begin{document}
+
+% --- PORTADA ----------------------------------------------------------------
+\pagenumbering{alph}
+\input{portada_bn}
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\begin{abstract}
+Se estudia el efecto Doppler acústico mediante ultrasonidos de frecuencia fija
+emitidos y recibidos sobre un carril, con emisor o receptor en movimiento
+uniforme. A partir de la relación entre las frecuencias emitida y recibida se
+determina la velocidad de propagación del sonido en el aire por regresión
+lineal y se contrasta con el valor teórico deducido de la temperatura
+ambiente; se estima, además, la frecuencia de emisión en las dos
+configuraciones posibles y se discute si el término cuadrático en $v/\vs$ es
+resoluble con el equipo disponible. Todas las magnitudes se expresan con su
+incertidumbre típica y ampliada al \SI{95}{\percent}, siguiendo la metodología de la
+\emph{Guide to the expression of uncertainty in measurement}.
+\end{abstract}
+
+\maketitle
+\tableofcontents
+
+% =========================================================================
+\section{Introducción}
+% =========================================================================
+La experiencia y su posterior análisis recogidos en este informe presentan
+como temática nuclear un fenómeno físico conocido como efecto Doppler. Fue
+propuesto por Christian Doppler en 1842 para explicar el color de las
+estrellas dobles~\cite{DOPPLER-1842} y verificado para el sonido pocos años
+después por Buys Ballot, quien hizo sonar una nota constante desde un
+ferrocarril en marcha y comprobó con oído entrenado que el tono percibido
+variaba según el tren se acercase o se alejase~\cite{BUYSBALLOT-1845}. Desde
+entonces el fenómeno se ha convertido en una herramienta de medida
+omnipresente: la velocimetría por ultrasonidos, el radar meteorológico y de
+tráfico o el corrimiento al rojo de las galaxias descansan sobre el mismo
+principio.
+
+En esta práctica se reproduce el efecto en condiciones controladas. Un
+emisor y un receptor de ultrasonidos se desplazan uno respecto del otro a
+velocidad constante y conocida, de modo que la diferencia entre la frecuencia
+emitida y la recibida puede medirse, compararse con la predicción teórica y
+utilizarse para inferir la velocidad del sonido en el aire. El informe se
+organiza como sigue: la \cref{sec:fundamentos} desarrolla el fundamento
+teórico; la \cref{sec:procedimiento} describe el procedimiento y establece el
+método de tratamiento de incertidumbres y de ajuste; la
+\cref{sec:analisis} recoge el análisis de los datos y la \cref{sec:discusion}
+su discusión y las conclusiones.
+
+\subsection{Objetivos}\label{sec:objetivos}
+Los objetivos de la práctica son los siguientes.
+\begin{itemize}
+    \item Hallar la velocidad con la que se propagan ondas ultrasonidos en un medio como el aire.
+    \item Evidenciar y calcular las diferencias entre la frecuencia emitida y recibida ante varias situaciones dinámicas del emisor y receptor.
+\end{itemize}
+El primero se aborda por vía indirecta: la velocidad del sonido aparece como
+pendiente de una recta cuando se representa convenientemente la velocidad
+relativa frente a una función de las frecuencias (\cref{sec:casos}), y el
+resultado se confronta con el valor teórico que predice la temperatura del
+laboratorio. El segundo exige medir $\fE$, $\fR$ y la velocidad relativa
+$v$ en cuatro situaciones dinámicas (emisor móvil y receptor en reposo, y
+viceversa, en ambos sentidos de la marcha) y comprobar que se ajustan a la
+ley de Doppler dentro de las incertidumbres experimentales.
+
+\subsection{Material empleado}\label{sec:material}
+Para el correcto desarrollo del montaje experimental, se ha hecho uso del siguiente instrumental:
+\begin{itemize}
+    \item Unidad de emisión y detección de ultrasonidos.
+    \item Carril y coche autopropulsado.
+    \item Emisor, receptor y soportes.
+    \item Barrera fotoeléctrica y temporizador.
+    \item Ordenador y unidad de medida Cobra-3.
+\end{itemize}
+
+\subsection{Montaje experimental}\label{sec:montaje}
+El montaje (\cref{fig:montaje}) se articula en torno a un carril rectilíneo
+sobre el que circula el coche autopropulsado, cuya velocidad se fija mediante
+un selector mecánico y cuyo sentido de marcha se invierte con un interruptor.
+El emisor de ultrasonidos y el receptor se sujetan a soportes verticales
+enfrentados y alineados con el eje del carril; uno de ellos permanece fijo y
+el otro se monta sobre el coche, de manera que la dirección que une emisor y
+receptor coincide con la de movimiento, como exige el modelo
+unidimensional de la \cref{sec:fundamentos}. La barrera fotoeléctrica se
+coloca aproximadamente a la mitad del recorrido para que el coche la atraviese
+a velocidad lo más uniforme posible. La unidad Cobra-3 se conecta al ordenador
+y, a través del programa de medida, cumple dos funciones: con el modo
+«Temporizador» determina la velocidad del coche a partir del tiempo de
+oscuración de la barrera, y con el modo «Contador» mide la frecuencia de la
+señal recibida~\cite{GUION-P8}.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, x=1cm, y=1cm, font=\small]
+  % --- carril ---
+  \fill[grisclaro] (0,0) rectangle (13.2,0.26);
+  \draw[grispizarra, line width=0.6pt] (0,0) rectangle (13.2,0.26);
+  \foreach \x in {0.6,1.2,...,12.6}{\draw[grispizarra!50, line width=0.3pt] (\x,0)--(\x,0.26);}
+  % --- coche ---
+  \begin{scope}[shift={(2.2,0.26)}]
+    \draw[azulprof, fill=azulclaro!55, line width=0.7pt, rounded corners=1.5pt]
+      (0,0.16) rectangle (2.5,0.78);
+    \draw[azulprof, fill=white, line width=0.7pt] (0.5,0.16) circle (0.16);
+    \draw[azulprof, fill=white, line width=0.7pt] (2.0,0.16) circle (0.16);
+    % soporte y emisor
+    \draw[grispizarra, line width=0.9pt] (1.25,0.78) -- (1.25,1.35);
+    \draw[azulprof, fill=azulacero!85, line width=0.7pt]
+      (1.25,1.35) -- ++(0.07,0.07) -- ++(0,0.46) -- ++(-0.14,0) -- ++(0,-0.46) -- cycle;
+    \fill[azulprof] (1.31,1.60) circle (0.05);
+    \node[azulprof, anchor=south] at (1.25,2.0) {emisor $(\mathrm{E})$};
+    % velocidad
+    \draw[->, line width=0.9pt, azulprof] (-0.05,1.1) -- (-0.85,1.1);
+    \node[azulprof, anchor=east] at (-0.9,1.1) {$\vE$};
+  \end{scope}
+  % --- ondas emitidas ---
+  \foreach \r/\o in {0.45/90, 0.85/70, 1.25/50, 1.65/35}{
+    \draw[azulacero, opacity=0.35+\o/200, line width=0.7pt]
+      (3.55,1.86) ++(-32:\r) arc[start angle=-32, end angle=32, radius=\r];
+  }
+  % --- receptor fijo ---
+  \begin{scope}[shift={(11.0,0.26)}]
+    \draw[grispizarra, line width=0.9pt] (0,0) -- (0,1.35);
+    \draw[azulprof, fill=azulacero!85, line width=0.7pt]
+      (0,1.35) -- ++(-0.07,0.07) -- ++(0,0.46) -- ++(0.14,0) -- ++(0,-0.46) -- cycle;
+    \node[azulprof, anchor=south] at (0,2.0) {receptor $(\mathrm{R})$};
+    \draw[grispizarra, fill=grisclaro, line width=0.6pt] (-0.4,0) rectangle (0.4,0.12);
+  \end{scope}
+  % --- barrera fotoeléctrica ---
+  \begin{scope}[shift={(7.0,0.26)}]
+    \draw[grispizarra, line width=1pt] (-0.45,0) -- (-0.45,1.05);
+    \draw[grispizarra, line width=1pt] (0.45,0) -- (0.45,1.05);
+    \fill[azulprof] (-0.45,0.95) circle (0.07);
+    \fill[azulprof] (0.45,0.95) circle (0.07);
+    \draw[azulacero, densely dashed, line width=0.6pt] (-0.45,0.95) -- (0.45,0.95);
+    \node[azulprof, align=center, anchor=south] at (0,1.15)
+      {barrera\\fotoeléctrica};
+  \end{scope}
+  % --- acotación de la distancia de propagación ---
+  \draw[|<->|, grispizarra, line width=0.5pt] (3.7,-0.55) -- (11.0,-0.55)
+    node[midway, fill=white, inner sep=1.5pt, text=black!80] {línea de propagación};
+  % --- interfaz y ordenador ---
+  \draw[azulprof, fill=azulclaro!55, line width=0.7pt, rounded corners=2pt]
+    (5.6,-2.35) rectangle (8.0,-1.45);
+  \node[azulprof, align=center] at (6.8,-1.9) {unidad\\Cobra-3};
+  \draw[azulprof, fill=white, line width=0.7pt, rounded corners=2pt]
+    (9.5,-2.45) rectangle (12.6,-1.45);
+  \node[azulprof, align=center] at (11.05,-1.95) {ordenador\\PHYWE Measure};
+  \draw[->, line width=0.8pt, azulprof] (8.0,-1.9) -- (9.5,-1.95);
+  % --- conexiones (cables) ---
+  \draw[grispizarra, densely dotted, line width=0.8pt]
+    (7.0,0.26) -- (7.0,-1.45);
+  \draw[grispizarra, densely dotted, line width=0.8pt]
+    (11.0,0.26) .. controls (11.0,-0.9) and (8.4,-0.9) .. (8.0,-1.7);
+  \draw[grispizarra, densely dotted, line width=0.8pt]
+    (3.45,0.26) .. controls (3.45,-1.0) and (5.4,-1.0) .. (5.6,-1.8);
+\end{tikzpicture}
+\caption{Esquema del montaje experimental. El emisor, solidario al coche
+autopropulsado, se mueve con velocidad $\vE$ a lo largo del carril; el
+receptor permanece fijo (en la segunda configuración se intercambian sus
+posiciones). La barrera fotoeléctrica, situada hacia la mitad del recorrido,
+permite medir la velocidad del coche, y la unidad Cobra-3 adquiere tanto esa
+velocidad como la frecuencia recibida y las transfiere al ordenador. Las
+líneas de puntos representan las conexiones eléctricas.}
+\label{fig:montaje}
+\end{figure}
+
+% =========================================================================
+\section{Fundamentos teóricos}\label{sec:fundamentos}
+% =========================================================================
+
+\subsection{Descripción del fenómeno}
+\begin{definicion}[Efecto Doppler]\label{def:doppler}
+El efecto Doppler es un fenómeno físico que describe el cambio en la
+frecuencia percibida de una onda cuando la fuente emisora de la onda y el
+observador están en movimiento relativo entre sí.
+\end{definicion}
+
+Este cambio de frecuencia no se debe a una modificación real de la frecuencia
+de la onda emitida, sino a un cambio en la forma en que el observador percibe
+la onda debido al movimiento. Su causa radica en la compresión o dilatación
+de las ondas debida al movimiento relativo entre la fuente y el observador.
+Si la fuente se mueve hacia el observador, las ondas se comprimen, lo que
+resulta en una longitud de onda más corta y una frecuencia percibida más
+alta; en las ondas de sonido se aprecia una frecuencia más aguda. Por el
+contrario, si la fuente se aleja, las ondas se dilatan, la longitud de onda
+aparente es mayor y la frecuencia menor: el sonido se hace más grave. El
+efecto se aplica a cualquier tipo de onda, incluyendo ondas sonoras, ondas de
+luz y ondas de agua~\cite{FV6-ECJ}. Conviene advertir que, en el caso del
+sonido, el movimiento debe referirse al medio de propagación: no es lo mismo
+que se mueva la fuente que que lo haga el observador, aunque, como se verá,
+ambas situaciones coinciden a primer orden en $v/\vs$.
+
+La \cref{fig:frentes} ilustra el mecanismo para una fuente $\mathrm{S}$ que se
+desplaza con velocidad $\vE>0$ hacia la derecha. En cada instante $t_k$ la
+fuente se encuentra en $x_k=\vE t_k$ y emite un frente que, transcurrido un
+tiempo $t-t_k$, ha alcanzado el radio $r_k=\vs\,(t-t_k)$. Los frentes se
+amontonan por delante de la fuente y se separan por detrás; un receptor
+situado delante, $\mathrm{R}_2$, registra por tanto una señal más rápida que
+la emitida, y uno situado detrás, $\mathrm{R}_1$, una más lenta.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, scale=0.85, every node/.style={scale=0.9}]
+  \definecolor{cS}{HTML}{1B365D}
+  \definecolor{cA}{HTML}{7A8C9E}
+  \definecolor{cB}{HTML}{3B6EA8}
+  % ---------- Panel izquierdo: frentes espaciales ----------
+  \begin{scope}
+    \node[anchor=west, text=grispizarra] at (-5.6,3.9) {\small\scshape (a)\; frentes de onda};
+    \draw[->, line width=0.7pt, grispizarra] (-5.5,0) -- (4.6,0) node[right, text=black] {$x$};
+    \def\rA{3.8} \def\cA{0}
+    \def\rB{2.8} \def\cB{0.7}
+    \def\rC{1.8} \def\cC{1.4}
+    \def\rD{0.8} \def\cD{2.1}
+    \foreach \c/\r/\o in {\cA/\rA/45,\cB/\rB/60,\cC/\rC/75,\cD/\rD/90}{
+      \draw[cB!\o!cA, line width=0.9pt] (\c,0) circle (\r);}
+    \foreach \c/\n in {\cA/0,\cB/1,\cC/2,\cD/3}{
+      \fill[cS] (\c,0) circle (2.3pt) node[below=3pt, text=cS] {$x_{\n}$};}
+    \node[text=cS, above=4pt] at (\cD,0) {$\mathrm{S}$};
+    \fill[cB] (-4.7,0) circle (3pt) node[below=4pt, text=cB] {$\mathrm{R}_1$};
+    \fill[cB] (3.55,0) circle (3pt) node[below=4pt, text=cB] {$\mathrm{R}_2$};
+    \draw[->, dashed, grispizarra] (\cA,0) -- ++(110:\rA)
+      node[midway, left=2pt, fill=white, inner sep=1pt, text=black!80] {$r_0$};
+    \draw[->, dashed, grispizarra] (\cB,0) -- ++(80:\rB)
+      node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_1$};
+    \draw[->, dashed, grispizarra] (\cC,0) -- ++(50:\rC)
+      node[midway, right=1pt, fill=white, inner sep=1pt, text=black!80] {$r_2$};
+    \draw[->, dashed, grispizarra] (\cD,0) -- ++(20:\rD)
+      node[midway, above=1pt, fill=white, inner sep=1pt, text=black!80] {$r_3$};
+    \draw[->, line width=0.9pt, cS] (\cD-0.6,-1.7) -- ++(1.2,0)
+      node[midway, below=1pt] {$\vE$};
+    \node[anchor=west, align=left, text=black!80] at (-5.7,2.45)
+      {$r_k=\vs\,(t-t_k)$};
+    \node[anchor=west, align=left, text=black!80] at (-5.7,-2.45)
+      {$x_k=\vE\,t_k$};
+  \end{scope}
+  % ---------- Panel derecho: señales ----------
+  \begin{scope}[shift={(6.6,0)}]
+    \def\w{5.5} \def\ha{1.1}
+    \node[anchor=west, text=grispizarra] at (0,3.9) {\small\scshape (b)\; señales temporales};
+    \foreach \y/\col/\lab/\f/\st in {2.55/cS/{\mathrm{S}}/1.5/0,
+                                     0/cB/{\mathrm{R}_1}/0.9/1.8,
+                                     -2.55/cB/{\mathrm{R}_2}/2.5/0.8}{
+      \begin{scope}[shift={(0,\y)}]
+        \draw[grisclaro, line width=0.4pt, step=0.5] (0,-\ha) grid (\w,\ha);
+        \draw[->, line width=0.7pt, grispizarra] (0,0) -- (\w+0.45,0);
+        \draw[->, line width=0.7pt, grispizarra] (0,-\ha-0.2) -- (0,\ha+0.2);
+        \draw[\col, line width=0.9pt] (0,0) -- (\st,0);
+        \draw[\col, line width=0.9pt, domain=\st:\w, samples=160]
+          plot (\x, {0.85*sin((\x-\st)*180*\f)});
+        \node[\col, fill=white, inner sep=2.5pt, draw=\col!60, line width=0.4pt]
+          at (\w-0.45,\ha-0.2) {$\lab$};
+      \end{scope}}
+    \node[text=black!80, anchor=north] at (\w/2,-3.9) {tiempo $t$};
+  \end{scope}
+\end{tikzpicture}
+\caption{Efecto Doppler generado por una fuente $\mathrm{S}$ que se desplaza
+con velocidad $\vE$. (a)~Frentes de onda emitidos en distintos instantes:
+compresión en el sentido del movimiento y dilatación en el opuesto.
+(b)~Señal emitida frente a las percibidas por los receptores $\mathrm{R}_1$
+(menor frecuencia) y $\mathrm{R}_2$ (mayor frecuencia), desfasadas por el
+tiempo de propagación. Esquema cualitativo, sin escala.}
+\label{fig:frentes}
+\end{figure}
+
+\subsection{Deducción en el sistema de referencia de la onda}\label{sec:deduccion}
+Para cuantificar el efecto se adopta un modelo unidimensional con las
+hipótesis siguientes.
+\begin{hipotesis}\label{hip:modelo}
+El medio de propagación está en reposo y emisor y receptor se mueven a lo
+largo de la recta que los une con velocidades constantes $\vE$ y $\vR$
+respecto al medio (positivas o negativas según el sentido del movimiento,
+tomando como positivo el de propagación, del emisor al receptor). La onda se
+propaga con velocidad constante $\vs>\vE,\,\vR$ respecto al medio.
+\end{hipotesis}
+
+Analicemos la emisión y la detección en el sistema de referencia de la onda
+(\cref{fig:relativo}). En dicho sistema el emisor se mueve con velocidad
+$\vE-\vs<0$ y el receptor con velocidad $\vR-\vs<0$. El emisor se desplaza una
+distancia igual a una longitud de onda $\lambda$ en un intervalo $\TE$ tal que
+\begin{equation}\label{eq:lambdaE}
+  \lambda = \TE\,(\vs-\vE),
+\end{equation}
+y el receptor recorre una longitud de onda en un intervalo $\TR$ tal que
+\begin{equation}\label{eq:lambdaR}
+  \lambda = \TR\,(\vs-\vR).
+\end{equation}
+Los tiempos $\TE$ y $\TR$ son, respectivamente, los períodos de la onda emitida
+y de la observada.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[>=Stealth, scale=1.15]
+  \draw[->, line width=0.5pt, grispizarra!60] (-2,0) -- (10,0)
+    node[right, text=grispizarra] {$x$};
+  \draw[azulacero, line width=0.9pt, densely dashed, domain=-1.5:1, samples=60]
+    plot (\x,{sin(\x*180)});
+  \draw[azulacero, line width=0.9pt, densely dashed, domain=7:9.5, samples=60]
+    plot (\x,{sin(\x*180)});
+  \draw[azulprof, line width=1.4pt, domain=1:7, samples=180]
+    plot (\x,{sin(\x*180)});
+  \foreach \x/\t in {1/emisor,7/receptor}{
+    \draw[grispizarra!70, densely dotted, line width=0.8pt] (\x,-1.4) -- (\x,1.4);
+    \node[draw=grispizarra!50, fill=white, inner sep=3.5pt, text=azulprof,
+          font=\small\scshape] at (\x,1.75) {\t};}
+  \draw[->, line width=0.9pt, azulprof] (1,-1.75) -- (0,-1.75)
+    node[midway, below] {$\vE-\vs$};
+  \draw[->, line width=0.9pt, azulprof] (7,-1.75) -- (6,-1.75)
+    node[midway, below] {$\vR-\vs$};
+  \draw[grispizarra!60, line width=0.4pt] (2.5,1.05) -- (2.5,1.55);
+  \draw[grispizarra!60, line width=0.4pt] (4.5,1.05) -- (4.5,1.55);
+  \draw[|<->|, line width=0.7pt, azulacero] (2.5,1.4) -- (4.5,1.4)
+    node[midway, fill=white, inner sep=2pt, above=-1pt] {$\lambda$};
+\end{tikzpicture}
+\caption{Movimientos del emisor y del receptor en el sistema de referencia
+de la onda, para $\vs>\vE,\vR$. Se toma como sentido positivo de propagación
+el de izquierda a derecha; ambas velocidades relativas son negativas.}
+\label{fig:relativo}
+\end{figure}
+
+Dividiendo ambas expresiones se obtiene la relación entre los períodos y,
+equivalentemente, entre las frecuencias, $f=1/T$:
+\begin{equation}\label{eq:cociente}
+  \frac{\TR}{\TE}=\frac{\vs-\vE}{\vs-\vR}
+  \qquad\Longleftrightarrow\qquad
+  \frac{\fR}{\fE}=\frac{\vs-\vR}{\vs-\vE}.
+\end{equation}
+Resulta cómodo reescribir la relación en términos de la velocidad relativa
+entre emisor y receptor,
+\begin{equation}\label{eq:vrel}
+  v \equiv \vE-\vR,
+\end{equation}
+que es positiva cuando emisor y receptor se acercan y negativa cuando se
+alejan, con independencia de los sentidos individuales de movimiento. Como
+$\vs-\vR=(\vs-\vE)+v$, la \cref{eq:cociente} adopta la forma
+\begin{equation}\label{eq:doppler}
+  \fR=\fE\left(1+\frac{v}{\vs-\vE}\right).
+\end{equation}
+
+\begin{proposicion}[Ley de Doppler para ondas sonoras]\label{prop:doppler}
+Bajo la \cref{hip:modelo}, las frecuencias emitida y recibida están
+relacionadas por la \cref{eq:doppler}. En particular, $\fR>\fE$ si emisor y
+receptor se acercan ($v>0$) y $\fR<\fE$ si se alejan ($v<0$).
+\end{proposicion}
+
+\subsection{Casos particulares y linealización}\label{sec:casos}
+Los dos casos que se estudian experimentalmente corresponden a que se mueva
+solo el emisor o solo el receptor.
+
+\medskip\noindent\textbf{Emisor en movimiento y receptor en reposo ($\vE\neq0,\ \vR=0$).}
+Entonces $v=\vE$ y la \cref{eq:doppler} se reduce a
+\begin{equation}\label{eq:emisor}
+  \fR=\frac{\fE}{1-v/\vs}.
+\end{equation}
+Despejando la velocidad relativa resulta
+\begin{equation}\label{eq:vsdespeje}
+  v=\vs\left(1-\frac{\fE}{\fR}\right),
+\end{equation}
+una relación \emph{lineal} entre $v$ y $1-\fE/\fR$ cuya pendiente es la
+velocidad de propagación de la onda. Esta expresión permite, por tanto,
+obtener $\vs$ midiendo la velocidad relativa y las frecuencias emitida y
+observada.
+
+\medskip\noindent\textbf{Emisor en reposo y receptor en movimiento ($\vE=0,\ \vR\neq0$).}
+Ahora $v=-\vR$ y
+\begin{equation}\label{eq:receptor}
+  \fR=\fE\left(1+\frac{v}{\vs}\right).
+\end{equation}
+Con la notación $x\equiv v/\vs$ y la identidad
+$1+x=\dfrac{1}{1-x}-\dfrac{x^{2}}{1-x}$, la \cref{eq:receptor} se escribe
+\begin{equation}\label{eq:receptor2}
+  \fR=\frac{\fE}{1-v/\vs}-\fE\,\frac{(v/\vs)^{2}}{1-v/\vs}
+  \;\approx\;\frac{\fE}{1-v/\vs},\qquad |v/\vs|\ll1.
+\end{equation}
+
+\begin{observacion}[Equivalencia a primer orden]\label{obs:primerorden}
+A primer orden en $|v/\vs|$ las situaciones de emisor móvil y de receptor
+móvil son indistinguibles: las \cref{eq:emisor,eq:receptor} difieren
+únicamente en el término cuadrático. El efecto Doppler acústico es, pues,
+asimétrico en sentido estricto (importa qué elemento se mueve respecto al
+medio), aunque la asimetría solo es apreciable a velocidades comparables a la
+del sonido.
+\end{observacion}
+
+\begin{proposicion}[Término cuadrático]\label{prop:cuadratico}
+Sea $\fR$ la frecuencia recibida con el receptor en movimiento y el emisor en
+reposo. La diferencia respecto a la predicción de emisor móvil vale
+\begin{equation}\label{eq:difcuadratica}
+  \fR-\frac{\fE}{1-v/\vs}=-\fE\,\frac{(v/\vs)^{2}}{1-v/\vs}\;\approx\;-\fE\Bigl(\frac{v}{\vs}\Bigr)^{2}.
+\end{equation}
+\end{proposicion}
+\begin{proof}
+Es consecuencia inmediata de la identidad algebraica anterior,
+$(1+x)-1/(1-x)=-x^{2}/(1-x)$, con $x=v/\vs$.
+\end{proof}
+
+La \cref{fig:cuadratico} compara ambas leyes. La diferencia relativa entre
+ellas crece como $x^{2}$, frente a la contribución lineal $x$, por lo que su
+observación exige medir con una precisión relativa en la frecuencia
+comparable a $|v/\vs|^{2}$. Esta cuestión se retoma en el análisis de datos.
+
+\begin{figure}[ht]
+\centering
+\pgfplotsset{
+  doppler/.style={
+    width=0.40\textwidth, height=5.4cm, tick label style={font=\scriptsize},
+    label style={font=\small}, axis lines=left, axis line style={grispizarra},
+    grid=major, grid style={grisclaro, line width=0.4pt}, every tick/.style={grispizarra},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.85,
+                  text opacity=1, at={(0.03,0.97)}, anchor=north west},
+    xlabel={$x=v/\vs$}}}
+\begin{tikzpicture}
+  \begin{axis}[doppler, ylabel={$\fR/\fE$}, xmin=-0.3, xmax=0.3,
+               ymin=0.6, ymax=1.5, xtick={-0.3,-0.15,0,0.15,0.3}]
+    \addplot[azulprof, line width=1pt, domain=-0.3:0.3, samples=100] {1/(1-x)};
+    \addplot[azulacero, line width=1pt, dashed, domain=-0.3:0.3, samples=2] {1+x};
+    \addplot[grispizarra, line width=0.6pt, densely dotted, domain=-0.3:0.3, samples=2]
+      {1+x}; % guía de primer orden
+    \legend{emisor móvil \eqref{eq:emisor},receptor móvil \eqref{eq:receptor}}
+  \end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+  \begin{axis}[doppler, ylabel={$\bigl(\fR-\fE/(1-x)\bigr)/\fE$}, xmin=-0.3, xmax=0.3,
+               ymin=-0.14, ymax=0.01, xtick={-0.3,-0.15,0,0.15,0.3},
+               scaled y ticks=false, yticklabel style={/pgf/number format/fixed,
+               /pgf/number format/precision=2}]
+    \addplot[azulprof, line width=1pt, domain=-0.3:0.3, samples=100]
+      {-x^2/(1-x)};
+    \addplot[grispizarra, line width=0.7pt, densely dashed, domain=-0.3:0.3, samples=2] {0};
+  \end{axis}
+\end{tikzpicture}
+\caption{Comparación de las leyes de emisor móvil y de receptor móvil.
+(Izquierda)~Cociente $\fR/\fE$ en función de $x=v/\vs$; la línea punteada es
+el desarrollo a primer orden, común a ambos casos. (Derecha)~Diferencia
+relativa entre ambas leyes \eqref{eq:difcuadratica}, nula para el emisor
+móvil por construcción. El rango de $x$ se ha ampliado con fines ilustrativos;
+en el laboratorio $|x|\ll1$.}
+\label{fig:cuadratico}
+\end{figure}
+
+% =========================================================================
+\section{Procedimiento experimental}\label{sec:procedimiento}
+% =========================================================================
+
+\subsection{Protocolo de medida}\label{sec:protocolo}
+Tras encender la fuente de alimentación, el ordenador y la unidad de medida,
+se ejecuta el programa PHYWE Measure y se selecciona el tipo de medida
+«Temporizador/Contador», sin modificar el resto de opciones. El modo
+«Temporizador», en automático, activa la barrera fotoeléctrica y determina la
+velocidad del coche en el instante en que la cruza; el modo «Contador», en
+manual, registra la frecuencia recibida cuando se pulsa la barra
+espaciadora. Cuando emisor o receptor van sobre el coche, la frecuencia se
+mide en el instante en que este atraviesa la barrera, de modo que velocidad y
+frecuencia corresponden al mismo punto del recorrido~\cite{GUION-P8}.
+
+\textbf{Emisor en movimiento y receptor en reposo.} Se determina en primer
+lugar la frecuencia de la señal en reposo, $\fE$, con al menos seis medidas.
+Se fija después una velocidad del coche con el selector mecánico y se miden
+seis veces tanto esa velocidad como la frecuencia observada, para cada
+sentido de la marcha, ajustando la amplitud de emisión para que la
+recepción sea adecuada. El proceso se repite para tres posiciones distintas
+del selector de velocidad.
+
+\textbf{Emisor en reposo y receptor en movimiento.} Se intercambian los
+soportes verticales de emisor y receptor, de modo que este último quede
+sobre el coche, y se sigue exactamente el mismo protocolo.
+
+\subsection{Velocidad del sonido esperada}\label{sec:vsesperada}
+En primer lugar se ha comenzado la experiencia midiendo el valor de la
+temperatura del aire, $T=\pend{\ldots}\,\si{\celsius}$, a fin de determinar el
+valor teórico o valor esperado de la velocidad del sonido en el aire,
+$\vst$, mediante
+\begin{equation}\label{eq:vs}
+  \vst = \SI{331,3}{\meter\per\second}\,\sqrt{1+\frac{T}{\SI{273,15}{}}},
+\end{equation}
+donde $T$ es la temperatura en grados Celsius. Este valor se emplea como
+referencia con la que contrastar la velocidad del sonido obtenida del ajuste
+y, en el análisis posterior, como dato en las abscisas $v/\vst$.
+
+\subsection{Tratamiento de incertidumbres}\label{sec:incertidumbres}
+El tratamiento de incertidumbres sigue las recomendaciones de la \emph{Guide to
+the expression of uncertainty in measurement}~\cite{GUM}, en la presentación
+de las notas del laboratorio~\cite{NUM-ARG}; para el vocabulario se sigue
+el~\cite{VIM}. Se resumen a continuación las definiciones empleadas.
+
+\begin{definicion}[Incertidumbre típica de una medida directa]\label{def:tipica}
+Sean $x_1,\dots,x_n$ medidas independientes de una misma magnitud $x$. Se toma
+como mejor estimación la media muestral y como incertidumbre típica la
+desviación típica de la media,
+\begin{equation}\label{eq:media}
+  \mean{x}=\frac1n\sum_{i=1}^{n}x_i,\qquad
+  s_x=\sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(x_i-\mean{x})^{2}},\qquad
+  u(\mean{x})=\frac{s_x}{\sqrt n},
+\end{equation}
+con $\nu=n-1$ grados de libertad.
+\end{definicion}
+
+\begin{definicion}[Límite de resolución]\label{def:resolucion}
+Si el instrumento tiene una resolución $\Delta$, se supone que el valor
+verdadero se distribuye uniformemente en un intervalo de anchura $\Delta$
+centrado en la lectura, cuya varianza es $\Delta^{2}/12$. Combinada con la
+incertidumbre estadística,
+\begin{equation}\label{eq:resolucion}
+  u(x_{\mathrm{b}})=\sqrt{u^{2}(\mean{x})+\frac{\Delta^{2}}{12}},
+  \qquad
+  \nu=(n-1)\,\frac{\bigl[u^{2}(\mean{x})+\Delta^{2}/12\bigr]^{2}}{u^{4}(\mean{x})}.
+\end{equation}
+En una lectura única se tiene $u=\Delta/\sqrt{12}$, con un número de grados de
+libertad que se toma infinito.
+\end{definicion}
+
+\begin{proposicion}[Propagación de incertidumbres]\label{prop:propagacion}
+Sea $y=f(x_1,\dots,x_N)$ una magnitud derivada de entradas no correlacionadas
+con incertidumbres típicas $u(x_k)$. Su incertidumbre típica es
+\begin{equation}\label{eq:propagacion}
+  u(y)=\sqrt{\sum_{k=1}^{N}c_k^{2}\,u^{2}(x_k)},\qquad
+  c_k=\frac{\partial f}{\partial x_k},
+\end{equation}
+y el número efectivo de grados de libertad, dado por la fórmula de
+Welch--Satterthwaite, es
+\begin{equation}\label{eq:welch}
+  \nu_{\mathrm{eff}}=\frac{u^{4}(y)}{\sum_{k}c_k^{4}\,u^{4}(x_k)/\nu_k}.
+\end{equation}
+\end{proposicion}
+
+\begin{definicion}[Incertidumbre ampliada]\label{def:ampliada}
+La incertidumbre ampliada con un nivel de confianza del \SI{95}{\percent} es
+\begin{equation}\label{eq:ampliada}
+  \ext{y}=\Tcoef\,u(y),
+\end{equation}
+donde $\Tcoef$ es el factor de cobertura (valor de la $t$ de Student) para
+$\nu$ grados de libertad (\cref{tab:student}). El resultado se expresa como
+$y\pm\ext{y}$, indicando siempre el significado de la incertidumbre
+citada y con no más de dos cifras significativas.
+\end{definicion}
+
+\begin{table}[ht]
+\centering
+\caption{Factor de cobertura $t_{95,\nu}$ para distintos grados de libertad $\nu$~\cite{NUM-ARG}.}
+\label{tab:student}
+\small
+\begin{tabular}{@{}c *{14}{c}@{}}
+\toprule
+$\nu$ & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 15 & 20 & 50 & 100 & $\infty$\\
+\midrule
+$t_{95,\nu}$ & \num{4,30} & \num{3,18} & \num{2,78} & \num{2,57} & \num{2,45} & \num{2,36} & \num{2,31} & \num{2,26} & \num{2,23} & \num{2,13} & \num{2,09} & \num{2,01} & \num{1,98} & \num{1,96}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Con ello se calculan, en primer lugar, las incertidumbres asociadas a la
+temperatura y a la velocidad esperada del sonido.
+
+\begin{calculo}[Lectura de la temperatura]\label{calc:T}
+Con una resolución del termómetro $\Delta=\SI{0,1}{\celsius}$ y una lectura
+única, la \cref{eq:resolucion} da
+\begin{equation}\label{eq:uT}
+  u^{2}(T)=\frac{\Delta^{2}}{12}
+  \quad\Longrightarrow\quad
+  u(T)=\frac{\Delta}{\sqrt{12}}\approx\SI{0,03}{\celsius}.
+\end{equation}
+En consecuencia, el registro térmico al comienzo de la experiencia ha sido
+$T=\pend{$t$}\pm\SI{0,03}{\celsius}$ (incertidumbre típica).
+\end{calculo}
+
+\begin{calculo}[Velocidad esperada del sonido]\label{calc:vs}
+Determinar la incertidumbre asociada a la lectura de la temperatura es un paso
+clave antes de poder hallar por propagación la incertidumbre propia de $\vst$.
+Al depender $\vst$ solo de $T$, la \cref{eq:propagacion} se reduce a
+\begin{equation}\label{eq:uvs0}
+  u^{2}(\vst)=\left(\frac{\partial\vst}{\partial T}\right)^{\!2}u^{2}(T).
+\end{equation}
+La derivada parcial se obtiene a partir de la dependencia térmica de la
+\cref{eq:vs}:
+\begin{equation}\label{eq:dvsdT}
+  \frac{\partial\vst}{\partial T}
+  =\frac{331{,}3}{2\cdot273{,}15\,\sqrt{1+T/273{,}15}}
+  =\frac{331{,}3}{546{,}3\,\sqrt{1+T/273{,}15}}
+  \approx\frac{\SI{0,606}{\meter\per\second\per\kelvin}}{\sqrt{1+T/273{,}15}},
+\end{equation}
+que debe evaluarse en la temperatura medida. Sustituyendo en la
+\cref{eq:uvs0} y extrayendo la raíz cuadrada,
+\begin{equation}\label{eq:uvs}
+  u(\vst)=\left|\frac{\partial\vst}{\partial T}\right|\frac{\Delta}{\sqrt{12}}
+  =\left|\frac{\partial\vst}{\partial T}\right|\frac{\SI{0,1}{\kelvin}}{\sqrt{12}}
+  \approx\frac{\SI{0,0175}{\meter\per\second}}{\sqrt{1+T/273{,}15}}
+  =\pend{\ldots}\,\si{\meter\per\second}.
+\end{equation}
+Luego se espera que la velocidad del sonido en el aire para las condiciones
+del laboratorio sea
+\begin{equation}\label{eq:vsresultado}
+  \vst=\pend{$\vst$}\pm\pend{$u(\vst)$}\ \si{\meter\per\second}
+  \quad(\text{incertidumbre típica}).
+\end{equation}
+\end{calculo}
+
+\begin{observacion}[Ámbito de validez]
+La incertidumbre de la \cref{eq:uvs} recoge únicamente la procedente de la
+lectura de $T$; no incluye la incertidumbre del propio modelo de la
+\cref{eq:vs}, que supone aire seco, ni posibles gradientes de temperatura a lo
+largo del carril. Por esta razón se espera que el contraste entre $\vst$ y la
+velocidad ajustada se sitúe en el ámbito de la incertidumbre ampliada de esta
+última.
+\end{observacion}
+
+\subsection{Estimación lineal por mínimos cuadrados}\label{sec:ajuste}
+Tres de las cuestiones del análisis consisten en ajustar rectas a conjuntos de
+datos. El modelo, y las expresiones para estimar los parámetros y sus
+incertidumbres, son los siguientes~\cite{NUM-ARG}.
+
+\begin{estimacion}[Ajuste lineal con incertidumbres comunes]\label{est:comun}
+Dados $n$ pares $(x_i,y_i)$ con incertidumbre común en $y_i$ y despreciable en
+$x_i$, el modelo $y=ax+b$ que minimiza $\sum_i(y_i-ax_i-b)^{2}$ tiene por
+parámetros
+\begin{equation}\label{eq:ajuste}
+  a=\frac{\cov(x,y)}{\var(x)}=\frac{\mean{xy}-\mean{x}\,\mean{y}}{\mean{x^{2}}-\mean{x}^{2}},
+  \qquad b=\mean{y}-a\,\mean{x},
+\end{equation}
+y sus incertidumbres típicas, con $\nu=n-2$ grados de libertad, son
+\begin{equation}\label{eq:uajuste}
+  s_\varepsilon=\sqrt{\frac{\sum_i(y_i-ax_i-b)^{2}}{n-2}},\qquad
+  u(a)=\frac{s_\varepsilon}{\sqrt{(n-1)\var(x)}},\qquad
+  u(b)=u(a)\sqrt{\mean{x^{2}}}.
+\end{equation}
+\end{estimacion}
+
+\begin{estimacion}[Ajuste lineal con incertidumbres distintas]\label{est:pesos}
+Si cada $y_i$ tiene incertidumbre $u_i$, se minimiza
+$\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ con pesos $w_i=1/u_i^{2}$. Las
+expresiones~\eqref{eq:ajuste} siguen siendo válidas sustituyendo las medias
+aritméticas por medias ponderadas $\langle\cdot\rangle$, y
+\begin{equation}\label{eq:uajustepesos}
+  u(a)=\frac{1}{\sqrt{\sum_iw_i}\,\sqrt{\langle x^{2}\rangle-\langle x\rangle^{2}}},\qquad
+  u(b)=u(a)\sqrt{\langle x^{2}\rangle}.
+\end{equation}
+\end{estimacion}
+
+Los parámetros se expresan como $a\pm\ext{a}$ y $b\pm\ext{b}$ con
+$\ext{a}=\Tcoef\,u(a)$ y $\nu=n-2$. Si la incertidumbre de la abscisa no es
+despreciable, se propaga al eje de ordenadas mediante la incertidumbre
+efectiva $u_{\mathrm{ef},i}^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i)$, que se itera hasta
+la convergencia de $a$. El coeficiente de correlación
+$r=\cov(x,y)/\sqrt{\var(x)\var(y)}$ y los residuos permiten juzgar la
+aceptabilidad del modelo lineal.
+
+Las tres rectas del análisis quedan recogidas en la \cref{tab:ajustes}; en
+todas ellas, si el modelo es correcto, la ordenada en el origen debe ser
+compatible con cero.
+
+\begin{table}[ht]
+\centering
+\caption{Linealizaciones empleadas. El valor teórico del cociente $\fR/\fE$ en
+cada caso procede de las \cref{eq:vsdespeje,eq:emisor,eq:receptor}.}
+\label{tab:ajustes}
+\small
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$ & Ordenada $b$\\
+\midrule
+Emisor móvil & $v$ & $1-\fE/\fR$ & $\vs$ & $0$\\
+Emisor móvil & $\fR$ & $(1-v/\vst)^{-1}$ & $\fE$ & $0$\\
+Receptor móvil & $\fR$ & $1+v/\vst$ & $\fE$ & $0$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{calculo}[Propagación a las variables del ajuste]\label{calc:abscisa}
+Para el primer ajuste, la abscisa $x=1-\fE/\fR$ hereda las incertidumbres de las
+frecuencias:
+\begin{equation}\label{eq:ux}
+  u^{2}(x)=\frac{u^{2}(\fE)}{\fR^{2}}+\frac{\fE^{2}\,u^{2}(\fR)}{\fR^{4}}.
+\end{equation}
+Para la diferencia $\Delta f=\fR-\fE\,(1-v/\vst)^{-1}$, empleada en la última
+cuestión y con $x\equiv v/\vst$, resulta
+\begin{equation}\label{eq:udf}
+  u^{2}(\Delta f)=u^{2}(\fR)+\frac{u^{2}(\fE)}{(1-x)^{2}}
+  +\frac{\fE^{2}}{\vst^{2}(1-x)^{4}}\Bigl[u^{2}(v)+x^{2}u^{2}(\vst)\Bigr].
+\end{equation}
+\end{calculo}
+
+% =========================================================================
+\section{Análisis de datos y resultados}\label{sec:analisis}
+% =========================================================================
+Siguiendo las indicaciones del guion~\cite{GUION-P8} y las recomendaciones de
+las notas de incertidumbres~\cite{NUM-ARG}, esta sección reúne los datos
+directos, los datos empleados en los ajustes y los resultados, con sus
+incertidumbres típicas y ampliadas.
+
+\subsection{Mediciones directas}
+\Cref{tab:directas} muestra la plantilla de recogida de datos, donde se
+indican explícitamente los límites de resolución de cada instrumento.
+
+\begin{table}[ht]
+\centering
+\caption{Mediciones directas. Se indican la resolución $\Delta$ de cada
+instrumento y las incertidumbres típicas asociadas.}
+\label{tab:directas}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Magnitud & $n$ & Valor & $u$ & $\Delta$\\
+\midrule
+Temperatura $T$ ($\si{\celsius}$) & 1 & \pendiente{ } & \SI{0,03}{} & \num{0,1}\\
+Frecuencia emitida $\fE$ ($\si{\hertz}$) & $\geq6$ & \pendiente{ } & \pendiente{ } & \pendiente{ }\\
+Velocidad $v$ ($\si{\meter\per\second}$) & 6 & \pendiente{ } & \pendiente{ } & \pendiente{ }\\
+Frecuencia recibida $\fR$ ($\si{\hertz}$) & 6 & \pendiente{ } & \pendiente{ } & \pendiente{ }\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Emisor en movimiento y receptor en reposo}
+\textbf{Velocidad del sonido.} Se representa $v$ frente a $1-\fE/\fR$ y, según
+la \cref{eq:vsdespeje}, se ajusta una recta cuya pendiente estima $\vs$ y se
+da su intervalo de confianza al \SI{95}{\percent}, que se compara con $\vst$
+(véase la \cref{eq:vsresultado}). \pendiente{Resultado del ajuste: $\vs=\ldots\pm\ldots$}
+
+\textbf{Frecuencia de emisión.} Se representa $\fR$ frente a $(1-v/\vst)^{-1}$
+y la pendiente del ajuste estima $\fE$, que se compara con el valor medido
+directamente. \pendiente{Resultado del ajuste: $\fE=\ldots\pm\ldots$}
+
+\subsection{Emisor en reposo y receptor en movimiento}
+Se representa $\fR$ frente a $1+v/\vst$ y la pendiente del ajuste estima
+$\fE$, que se compara con el valor medido directamente.
+\pendiente{Resultado del ajuste: $\fE=\ldots\pm\ldots$}
+
+\subsection{Análisis del término cuadrático}
+Con los valores directamente medidos de $\fR$, $\fE$, $v$ y con $\vst$, se
+calculan las diferencias $\Delta f$ y sus incertidumbres (\cref{eq:udf}) y se
+representan frente a $v/\vst$ sin ajuste alguno. Según la
+\cref{prop:cuadratico}, el término cuadrático solo es observable si
+$|\Delta f|$ supera su incertidumbre ampliada $\ext{\Delta f}$.
+\pendiente{Representación de $\Delta f$ y discusión}
+
+% =========================================================================
+\section{Discusión y conclusiones}\label{sec:discusion}
+% =========================================================================
+\begin{observacion}[Fuentes de incertidumbre]
+Se han de valorar, entre otras, la uniformidad de la velocidad del coche en
+las inmediaciones de la barrera, la sincronización entre la medida de $v$ y la
+de $\fR$, la alineación de emisor y receptor con el eje del carril y las
+reflexiones del ultrasonido en el entorno.
+\end{observacion}
+
+\begin{conclusion}\label{conc:final}
+\pendiente{Conclusiones del informe: valor de $\vs$ y su compatibilidad con
+$\vst$; frecuencias de emisión estimadas y su compatibilidad con las medidas
+directas; observabilidad del término cuadrático.}
+\end{conclusion}
+
+% =========================================================================
+%                              BIBLIOGRAFÍA
+% =========================================================================
+\printbibliography[title={Referencias}]
+
+\end{document}

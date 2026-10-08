@@ -1,66 +1,109 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Plantilla de Portada (Tipografía clásica de LaTeX)
+% Portada — estilo artículo científico, motivo: frentes de onda Doppler
+% Requiere (definidos en main.tex): colores azulprof, azulacero, azulclaro,
+% grispizarra, grisclaro; y las macros \Universidad, \Facultad, \Titulacion,
+% \Asignatura, \NumPractica, \TituloPractica, \tipotrabajo, \miNombre,
+% \miTutor, \miUbicacion.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{titlepage}
-
-% Márgenes de esta página modificados para un encuadre perfecto y simétrico
-\newgeometry{top=3cm,bottom=3cm,outer=2.5cm,inner=2.5cm}
 \thispagestyle{empty}
+\pagecolor{white}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Universidad, facultad y titulación
-\begin{center}
-    {\rmfamily\scshape\fontsize{20pt}{25pt}\selectfont \Universidad}\\[0.5cm]
-    {\rmfamily\bfseries\fontsize{14pt}{17pt}\selectfont \MakeUppercase\Facultad}\\[0.4cm] 
-    {\rmfamily\bfseries\fontsize{13pt}{16pt}\selectfont \Titulacion}\\[0.3cm]
-    \rule{\textwidth}{1.5pt} % Línea divisoria superior gruesa
-\end{center}
+\begin{tikzpicture}[remember picture, overlay,
+    pg/.style={x=1cm, y=1cm}]
+  \coordinate (O) at (current page.south west);
 
-\vfill
+  % ----------------------------------------------------------------
+  % Motivo gráfico: frentes de onda de una fuente que se desplaza hacia
+  % la derecha (compresión a la derecha, dilatación a la izquierda).
+  % ----------------------------------------------------------------
+  \begin{scope}
+    \clip (O) rectangle ($(O)+(21cm,24.6cm)$);
+    \foreach \k in {0,...,15}{
+      \pgfmathsetmacro{\cx}{8.2+0.36*\k}
+      \pgfmathsetmacro{\rr}{8.4-0.60*\k}
+      \pgfmathsetmacro{\pc}{14+5.2*\k}
+      \pgfmathsetmacro{\lw}{0.25+0.035*\k}
+      \draw[azulprof!\pc!azulclaro, line width=\lw pt]
+        ($(O)+(\cx cm,17.2cm)$) circle (\rr cm);
+    }
+    \fill[azulprof] ($(O)+(8.2cm+0.36cm*15,17.2cm)$) circle (2.2pt);
+  \end{scope}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Logotipos perfectamente distribuidos
-\begin{center}
-    \includegraphics[width=7.5cm]{Logo USAL.png}
-    
-    \vspace{1.5cm} 
-    
-    \includegraphics[width=7.5cm]{Logo Facultad de Ciencias.png}
-\end{center}
+  % ----------------------------------------------------------------
+  % Señal con desplazamiento Doppler (chirp): frecuencia creciente
+  % ----------------------------------------------------------------
+  \begin{scope}[shift={(O)}]
+    \draw[azulacero, line width=0.9pt, domain=2.2:18.8, samples=420, smooth]
+      plot ({\x}, {12.95 + 0.33*sin(deg((\x-2.2)*(2.2+0.58*(\x-2.2))))});
+  \end{scope}
 
-\vfill
+  % ----------------------------------------------------------------
+  % Cabecera: logotipos y filete
+  % ----------------------------------------------------------------
+  \node[anchor=north west, inner sep=0] at ($(O)+(2.2cm,27.9cm)$)
+    {\includegraphics[height=1.42cm]{Logo USAL.png}};
+  \node[anchor=north east, inner sep=0] at ($(O)+(18.8cm,27.9cm)$)
+    {\includegraphics[height=1.42cm]{Logo Facultad de Ciencias.png}};
+  \draw[grispizarra!60, line width=0.4pt]
+    ($(O)+(2.2cm,26.0cm)$) -- ($(O)+(18.8cm,26.0cm)$);
+  \node[anchor=north west, inner sep=0, text=grispizarra, font=\scshape\small]
+    at ($(O)+(2.2cm,25.75cm)$)
+    {\textls[80]{\Universidad\ · \Facultad}};
+  \node[anchor=north east, inner sep=0, text=grispizarra, font=\scshape\small]
+    at ($(O)+(18.8cm,25.75cm)$)
+    {\textls[80]{\Titulacion}};
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Título de la Asignatura y Práctica
-\begin{center}
-    \rule{0.85\textwidth}{1pt}\\[1.15cm]
-    {\rmfamily\bfseries\fontsize{22pt}{28pt}\selectfont
-    Laboratorio de Mecánica y Ondas}\\[0.7cm]
-    \rule{0.85\textwidth}{1pt}\\[0.9cm]
-    {\rmfamily\bfseries\fontsize{18pt}{24pt}\selectfont
-    Práctica 8: efecto Doppler con ultrasonidos}
-\end{center}
+  % ----------------------------------------------------------------
+  % Bloque del título
+  % ----------------------------------------------------------------
+  \node[anchor=south west, inner sep=0, text=azulacero, font=\scshape\large,
+        text width=16.6cm]
+    at ($(O)+(2.2cm,11.2cm)$)
+    {\textls[120]{\Asignatura\ ·\ \NumPractica}};
 
-\vfill
+  \node[anchor=north west, inner sep=0, text=azulprof, text width=16.6cm,
+        align=left]
+    at ($(O)+(2.2cm,11.0cm)$)
+    {\fontsize{35}{39}\selectfont\bfseries\TituloPractica};
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Tipo, Autores y Tutores (Alineados a la derecha sin superposiciones)
-\begin{flushright}
-    \begin{minipage}{7.5cm}
-        \begin{flushleft}
-            % Tipo trabajo
-            {\rmfamily\bfseries\itshape\fontsize{12pt}{14pt}\selectfont \MakeUppercase\tipotrabajo}\\[0.5cm]
-            % Autores
-            {\rmfamily\fontsize{12pt}{14pt}\selectfont Autores:}\\ 
-            {\rmfamily\bfseries\fontsize{12pt}{14pt}\selectfont \miNombre}\\[0.5cm]
-            % Tutores
-            {\rmfamily\fontsize{12pt}{14pt}\selectfont Tutores:}\\
-            {\rmfamily\bfseries\fontsize{12pt}{14pt}\selectfont \miTutor}\\[0.5cm]
-            % Localidad y Fecha
-            {\rmfamily\bfseries\itshape\fontsize{12pt}{14pt}\selectfont \MakeUppercase \miUbicacion, \number\year}
-        \end{flushleft}
-    \end{minipage}
-\end{flushright}
+  \draw[azulacero, line width=1.4pt]
+    ($(O)+(2.2cm,7.35cm)$) -- ($(O)+(4.7cm,7.35cm)$);
 
-\end{titlepage} % Fin de portada
+  \node[anchor=north west, inner sep=0, text=grispizarra, text width=16.6cm,
+        align=left, font=\itshape\large]
+    at ($(O)+(2.2cm,7.05cm)$)
+    {$\displaystyle f_{\mathrm{R}} \;=\; f_{\mathrm{E}}\,
+      \frac{v_{\mathrm{s}}-v_{\mathrm{R}}}{v_{\mathrm{s}}-v_{\mathrm{E}}}$};
+
+  % ----------------------------------------------------------------
+  % Pie: tipo de trabajo, autores, tutores, lugar y fecha
+  % ----------------------------------------------------------------
+  \draw[grispizarra!60, line width=0.4pt]
+    ($(O)+(2.2cm,5.1cm)$) -- ($(O)+(18.8cm,5.1cm)$);
+
+  \node[anchor=north west, inner sep=0, text width=4.6cm, align=left]
+    at ($(O)+(2.2cm,4.75cm)$)
+    {{\scshape\small\color{azulacero}\textls[80]{Documento}}\\[3pt]
+     {\large\bfseries\color{azulprof}\tipotrabajo}};
+
+  \node[anchor=north west, inner sep=0, text width=5.6cm, align=left]
+    at ($(O)+(7.2cm,4.75cm)$)
+    {{\scshape\small\color{azulacero}\textls[80]{Autores}}\\[3pt]
+     {\large\color{black!85}\miNombre}};
+
+  \node[anchor=north west, inner sep=0, text width=5cm, align=left]
+    at ($(O)+(13.8cm,4.75cm)$)
+    {{\scshape\small\color{azulacero}\textls[80]{Tutores}}\\[3pt]
+     {\large\color{black!85}\miTutor}};
+
+  \node[anchor=south east, inner sep=0, text=grispizarra, font=\scshape\small]
+    at ($(O)+(18.8cm,1.45cm)$)
+    {\textls[100]{\miUbicacion, \number\year}};
+  \fill[azulprof] ($(O)+(0,0)$) rectangle ($(O)+(21cm,0.45cm)$);
+  \fill[azulacero] ($(O)+(0,0)$) rectangle ($(O)+(7cm,0.45cm)$);
+  \fill[azulclaro] ($(O)+(0,0)$) rectangle ($(O)+(3cm,0.45cm)$);
+\end{tikzpicture}
+
+\end{titlepage}
