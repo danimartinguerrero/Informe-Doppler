@@ -15,28 +15,32 @@
   \coordinate (O) at (current page.south west);
 
   % ----------------------------------------------------------------
-  % Motivo gráfico: frentes de onda de una fuente que se desplaza hacia
-  % la derecha (compresión a la derecha, dilatación a la izquierda).
+  % Motivo gráfico: frentes de onda emitidos por una fuente S que se mueve
+  % hacia la derecha. Cada circunferencia es el frente emitido desde una
+  % posición anterior (marcada sobre la trayectoria): los frentes se
+  % comprimen delante de la fuente y se separan detrás.
   % ----------------------------------------------------------------
   \begin{scope}
     \clip (O) rectangle ($(O)+(21cm,24.6cm)$);
-    \foreach \k in {0,...,15}{
+    \foreach \k in {0,...,13}{
       \pgfmathsetmacro{\cx}{8.2+0.36*\k}
       \pgfmathsetmacro{\rr}{8.4-0.60*\k}
-      \pgfmathsetmacro{\pc}{14+5.2*\k}
-      \pgfmathsetmacro{\lw}{0.25+0.035*\k}
+      \pgfmathsetmacro{\pc}{14+6.5*\k}
+      \pgfmathsetmacro{\lw}{0.25+0.04*\k}
       \draw[azulprof!\pc!azulclaro, line width=\lw pt]
         ($(O)+(\cx cm,17.2cm)$) circle (\rr cm);
+      \fill[azulacero!\pc!azulclaro] ($(O)+(\cx cm,17.2cm)$) circle (1.1pt);
     }
-    \fill[azulprof] ($(O)+(8.2cm+0.36cm*15,17.2cm)$) circle (2.2pt);
-  \end{scope}
-
-  % ----------------------------------------------------------------
-  % Señal con desplazamiento Doppler (chirp): frecuencia creciente
-  % ----------------------------------------------------------------
-  \begin{scope}[shift={(O)}]
-    \draw[azulacero, line width=0.9pt, domain=2.2:18.8, samples=420, smooth]
-      plot ({\x}, {12.95 + 0.33*sin(deg((\x-2.2)*(2.2+0.58*(\x-2.2))))});
+    % trayectoria de la fuente y posición actual
+    \draw[azulprof, densely dotted, line width=0.5pt]
+      ($(O)+(8.2cm,17.2cm)$) -- ($(O)+(13.24cm,17.2cm)$);
+    \draw[azulprof, -{Stealth[length=5pt]}, line width=0.9pt]
+      ($(O)+(13.24cm,17.2cm)$) -- ($(O)+(14.9cm,17.2cm)$);
+    \fill[azulprof] ($(O)+(13.24cm,17.2cm)$) circle (3.2pt);
+    \node[azulprof, anchor=south, inner sep=2pt, font=\itshape\normalsize]
+      at ($(O)+(12.75cm,17.3cm)$) {fuente S};
+    \node[azulprof, anchor=north, inner sep=2pt, font=\normalsize]
+      at ($(O)+(14.1cm,17.12cm)$) {$v_{\mathrm{E}}$};
   \end{scope}
 
   % ----------------------------------------------------------------
@@ -50,18 +54,29 @@
     ($(O)+(2.2cm,26.0cm)$) -- ($(O)+(18.8cm,26.0cm)$);
   \node[anchor=north west, inner sep=0, text=grispizarra, font=\scshape\small]
     at ($(O)+(2.2cm,25.75cm)$)
-    {\textls[80]{\Universidad\ · \Facultad}};
+    {\textls[80]{\Universidad\ \textbar\ \Facultad}};
   \node[anchor=north east, inner sep=0, text=grispizarra, font=\scshape\small]
     at ($(O)+(18.8cm,25.75cm)$)
     {\textls[80]{\Titulacion}};
 
   % ----------------------------------------------------------------
-  % Bloque del título
+  % Bloque del título (sobre un velo blanco para que las ondas no tapen el texto)
   % ----------------------------------------------------------------
+  \shade[top color=white!0, bottom color=white, opacity=0.95]
+    ($(O)+(0,12.3cm)$) rectangle ($(O)+(21cm,13.4cm)$);
+  \fill[white, opacity=0.95] ($(O)+(0,5.35cm)$) rectangle ($(O)+(21cm,12.3cm)$);
+  % ----------------------------------------------------------------
+  % Señal con desplazamiento Doppler (chirp): frecuencia creciente
+  % ----------------------------------------------------------------
+  \begin{scope}[shift={(O)}]
+    \draw[azulacero, line width=0.9pt, domain=2.2:18.8, samples=420, smooth]
+      plot ({\x}, {12.95 + 0.33*sin(deg((\x-2.2)*(2.2+0.58*(\x-2.2))))});
+  \end{scope}
+
   \node[anchor=south west, inner sep=0, text=azulacero, font=\scshape\large,
         text width=16.6cm]
     at ($(O)+(2.2cm,11.2cm)$)
-    {\textls[120]{\Asignatura\ ·\ \NumPractica}};
+    {\textls[120]{\Asignatura\ \textbar\ \NumPractica}};
 
   \node[anchor=north west, inner sep=0, text=azulprof, text width=16.6cm,
         align=left]
