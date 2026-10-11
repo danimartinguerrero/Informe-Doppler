@@ -1131,6 +1131,72 @@ La gráfica se resume en cuatro observaciones.
     (\cref{met:chi2}); así, $u(\vs)\approx\SI{3e1}{\meter\per\second}$.
 \end{itemize}
 
+\textbf{Ajuste sin las series a velocidad máxima.} Las dos series a velocidad
+máxima son las que se apartan de la ley de Doppler. En el alejamiento, el
+desplazamiento medido es de \SI{-247}{\hertz} cuando cabría esperar unos
+\SI{-45}{\hertz}, y sus seis frecuencias se dispersan
+$s=\SI{74}{\hertz}$, frente a 3--12~Hz en el resto de series. En el
+acercamiento, incluso descontando la deriva de $\fE$, el desplazamiento casi
+duplica el esperado. A esa velocidad el móvil cruza la barrera en muy poco
+tiempo y la lectura manual de la frecuencia difícilmente coincide con su paso,
+de modo que tenemos motivos experimentales, y no solo estadísticos, para
+considerarlas poco fiables. Repetimos el ajuste sin ellas (\cref{fig:ajuste1b}):
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[datos, name=principal2, width=0.86\textwidth, height=6.2cm,
+      xmin=-0.7, xmax=1.5, ymin=-0.32, ymax=0.32, clip=true,
+      xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
+      legend pos=north west, ytick={-0.3,-0.2,-0.1,0,0.1,0.2,0.3},
+      yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
+    \addplot[teorica, domain=-0.7:1.5, samples=2] {0.34485*x};
+    \addlegendentry{$v=\vst\,x$ (valor teórico)}
+    \addplot[ajuste, domain=-0.7:1.5, samples=2] {0.2778235*x+(-0.1085864)};
+    \addlegendentry{ajuste ponderado (4 puntos)}
+    \addplot[puntoA] coordinates {(1.22569,0.22417) +- (0.04482,0.00092) (0.68085,0.12717) +- (0.10117,0.00042)};
+    \addlegendentry{acercamiento}
+    \addplot[puntoB] coordinates {(-0.41471,-0.24200) +- (0.06189,0.00083) (-0.08620,-0.12833) +- (0.03217,0.00068)};
+    \addlegendentry{alejamiento}
+  \end{axis}
+  \begin{axis}[datos, at={(principal2.south west)}, anchor=north west, yshift=-4pt,
+      width=0.86\textwidth, height=3.0cm, xmin=-0.7, xmax=1.5, ymin=-3.2, ymax=3.2,
+      xlabel={$10^{3}\,x=10^{3}\,(1-\fE/\fR)$}, ylabel={$r_i/u_i$},
+      ytick={-2,0,2}]
+    \addplot[grispizarra, line width=0.5pt, densely dashed, domain=-0.7:1.5, samples=2] {0};
+    \addplot[only marks, mark=*, mark size=1.7pt, azulprof,
+      error bars/.cd, y dir=both, y explicit,
+      error bar style={line width=0.5pt, azulprof}, error mark options={rotate=90, mark size=1.8pt, azulprof}]
+      coordinates {(1.22569,-0.6225) +- (0,1) (-0.41471,-1.0572) +- (0,1) (0.68085,1.6577) +- (0,1) (-0.08620,0.4687) +- (0,1)};
+  \end{axis}
+\end{tikzpicture}
+\caption{Velocidad relativa del emisor frente a $1-\fE/\fR$ sin las dos series a
+velocidad máxima. Círculos: acercamiento; cuadrados: alejamiento; barras:
+incertidumbre típica. Recta continua: ajuste ponderado con los cuatro puntos
+restantes; discontinua: predicción con $\vst$. Debajo, los residuos
+normalizados $r_i/u_i$.}
+\label{fig:ajuste1b}
+\end{figure}
+
+\begin{destacado}[Ajuste 1$'$ --- sin las series a velocidad máxima]
+\vspace{-4pt}
+\begin{equation}\label{eq:vsajusteb}
+  \vs=(\num{2,8}\pm\num{0,7})\times10^{2}\,\si{\meter\per\second},\qquad
+  b=(\num{-0,11}\pm\num{0,05})\,\si{\meter\per\second}.
+\end{equation}
+{\small Incertidumbres ampliadas al \SI{95}{\percent}: $\nu=2$,
+$t_{95,2}=\num{4,30}$, $\chi^{2}/\nu=\num{2,2}$. Sin redondear,
+$\vs=\SI{277,8}{\meter\per\second}$ y $\ext{\vs}=\SI{67,0}{\meter\per\second}$.}
+\end{destacado}
+Sin esas dos series el ajuste mejora claramente: los residuos se quedan dentro
+de $\pm2$ y $\chi^{2}/\nu$ baja de 17 a 2,2. La velocidad del sonido sube a
+\SI{278}{\meter\per\second} y su diferencia con $\vst$, \SI{67}{\meter\per\second},
+queda justo en el límite del intervalo al \SI{95}{\percent}. La ordenada, en
+cambio, sigue sin ser nula: corresponde a una frecuencia de emisión efectiva de
+unos \SI{40624}{\hertz}, la misma deriva de unos \SI{16}{\hertz} que en el
+ajuste anterior. Ese desplazamiento sistemático, que el ajuste no puede
+eliminar, explica que $\vs$ siga por debajo del valor teórico.
+
 \medskip
 \textbf{Frecuencia de emisión.} Se representa $\fR$ frente a $(1-v/\vst)^{-1}$,
 con $\vst$ de la \cref{eq:vsref}; según la \cref{eq:emisor}, la pendiente de la
@@ -1156,11 +1222,13 @@ será observable si $\lvert\Delta f\rvert$ supera $\ext{\Delta f}$.
 \section{Discusión y conclusiones}\label{sec:discusion}
 % =========================================================================
 \begin{conclusion}[Velocidad del sonido]\label{conc:vs}
-El ajuste ponderado de $v$ frente a $1-\fE/\fR$ da
+Con las seis series, el ajuste ponderado de $v$ frente a $1-\fE/\fR$ da
 $\vs=(\num{2,4}\pm\num{0,9})\times10^{2}$~m/s al \SI{95}{\percent}, por debajo
-del valor esperado $\vst=(\num{344,9}\pm\num{0,5})$~m/s. La diferencia supera
-por poco el intervalo de confianza, así que, con estos datos, ambos valores no
-son compatibles. Aun así, la gráfica sí refleja el efecto Doppler: la frecuencia
+del valor esperado $\vst=(\num{344,9}\pm\num{0,5})$~m/s y fuera, por poco, del
+intervalo de confianza. Si descartamos las dos series a velocidad máxima, cuyas
+frecuencias son poco fiables, obtenemos $\vs=(\num{2,8}\pm\num{0,7})\times10^{2}$~m/s,
+con un ajuste mucho más coherente ($\chi^{2}/\nu=\num{2,2}$) y en el límite de la
+compatibilidad con $\vst$. En ambos casos, la gráfica sí refleja el efecto Doppler: la frecuencia
 recibida aumenta en el acercamiento, disminuye en el alejamiento y el
 desplazamiento crece con la velocidad del móvil.
 \end{conclusion}
