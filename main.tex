@@ -696,17 +696,16 @@ distribución uniforme entre ellos, $u^{2}=(\Delta\vst)^{2}/12+u^{2}(\vst^{\,\ma
 \begin{observacion}[Sobre el modelo uniforme]\label{obs:uniforme}
 Este procedimiento supone que es razonable representar la variación ambiental
 mediante una distribución uniforme entre los dos extremos medidos. Se trata de
-una \emph{elección de modelo} para cuantificar la incertidumbre (una evaluación
-de tipo~B~\cite{NUM-ARG}), no de una afirmación de que la temperatura haya
+una \emph{elección de modelo} para cuantificar la incertidumbre (una evaluación no estadística o «de tipo B» \cite{NUM-ARG}), no de una afirmación de que la temperatura haya
 seguido exactamente una distribución uniforme a lo largo de la mañana.
 \end{observacion}
 \end{calculo}
 \subsection{Frecuencia de la señal en reposo}
 Antes de abordar las situaciones de movimiento relativo, se ha medido la frecuencia de la onda ultrasonido, enfrentando emisor y receptor, ambos en reposo y situando el emisor acoplado al móvil, justo en la barrera fotoeléctrica, de tal modo que al presionar espacio en el ordenador hemos obtenido valores de 40607 y 40608 Hz para las seis medidas realizadas.
+
 En concreto, las seis lecturas fueron 40607, 40607, 40608, 40608, 40608 y
-40608~Hz. Tratamos esta serie estadísticamente
-(evaluación de tipo~A)~\cite{NUM-ARG,ERR-MP} y le añadimos la contribución de la
-resolución del contador, $\Delta f=\SI{1}{\hertz}$ (evaluación de tipo~B).
+40608~Hz. Tratamos esta serie estadísticamente (evaluación «de tipo A» ~\cite{NUM-ARG,ERR-MP}) y le añadimos la contribución de la
+resolución del contador, $\Delta f=\SI{1}{\hertz}$.
 
 \begin{calculo}[Frecuencia de emisión en reposo]\label{calc:fE}
 La media y la desviación típica muestrales de las $n=6$ lecturas son
@@ -854,8 +853,76 @@ emisor móvil, $v=\vE$ y su signo coincide con el sentido de las tablas; con el 
 \end{observacion}
 
 \subsection{Estimación lineal}\label{sec:ajuste}
-Se ajustan rectas $y=ax+b$ por mínimos cuadrados (\cref{tab:ajustes}). Con $n$
-pares $(x_i,y_i)$, incertidumbre común en $y_i$ y despreciable en
+Las tres cuestiones del análisis se resuelven ajustando una recta $y=ax+b$ por
+mínimos cuadrados. Antes de dar las fórmulas, conviene escribir cada relación
+teórica de la \cref{sec:fundamentos} en esa forma e identificar qué papel desempeña
+cada magnitud.
+
+\subsubsection{Linealización de los tres casos}
+
+\textbf{Caso 1: emisor móvil, ajuste de la velocidad relativa.} Con el receptor
+en reposo, la velocidad relativa es $v=\vE$ y la ley de Doppler queda
+\begin{equation*}
+  \frac{\fR}{\fE}=\frac{\vs}{\vs-v}
+  \qquad\Longrightarrow\qquad
+  v=\vs\left(1-\frac{\fE}{\fR}\right).
+\end{equation*}
+Es una recta cuyas ordenada, pendiente y abscisa son
+\begin{equation}\label{eq:lin1}
+  \underbrace{v}_{y}=\underbrace{\vs}_{a}\,
+  \underbrace{\left(1-\frac{\fE}{\fR}\right)}_{x}+\underbrace{0}_{b}.
+\end{equation}
+Su pendiente proporciona una estimación experimental de la velocidad del sonido.
+
+\textbf{Caso 2: emisor móvil, ajuste de la frecuencia recibida.} Partiendo de
+la misma ecuación y dividiendo numerador y denominador por $\vs$,
+$\fR=\fE\,(1-v/\vs)^{-1}$. Si en la abscisa empleamos la velocidad del sonido de
+referencia $\vst$ (\cref{eq:vsref}),
+\begin{equation}\label{eq:lin2}
+  \underbrace{\fR}_{y}=\underbrace{\fE}_{a}\,
+  \underbrace{\left(1-\frac{v}{\vst}\right)^{-1}}_{x}+\underbrace{0}_{b},
+\end{equation}
+y la pendiente estima la frecuencia emitida.
+
+\textbf{Caso 3: receptor móvil, ajuste de la frecuencia recibida.} Con el
+emisor en reposo, $v=-\vR$ y la \cref{eq:receptor} se escribe directamente como
+\begin{equation}\label{eq:lin3}
+  \underbrace{\fR}_{y}=\underbrace{\fE}_{a}\,
+  \underbrace{\left(1+\frac{v}{\vst}\right)}_{x}+\underbrace{0}_{b},
+\end{equation}
+de nuevo con la frecuencia emitida como pendiente. La \cref{tab:ajustes}
+resume las tres linealizaciones.
+
+\begin{table}[ht]
+\centering
+\caption{Linealizaciones empleadas; en todas la ordenada $b$ debe ser compatible con cero.}
+\label{tab:ajustes}
+\small
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}lllccc@{}}
+\toprule
+Caso & Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$ & Ordenada $b$\\
+\midrule
+1 & Emisor móvil & $v$ & $1-\fE/\fR$ & $\vs$ & $0$\\
+2 & Emisor móvil & $\fR$ & $(1-v/\vst)^{-1}$ & $\fE$ & $0$\\
+3 & Receptor móvil & $\fR$ & $1+v/\vst$ & $\fE$ & $0$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{La ordenada en el origen}
+Las tres relaciones teóricas tienen la forma $y=ax$: el modelo predice $b=0$.
+El ajuste, sin embargo, deja libre la ordenada, y su valor experimental sirve
+de control. Si el intervalo $b\pm\ext{b}$ contiene el cero, por ejemplo
+$b=(\num{0,2}\pm\num{0,5})\,\si{\hertz}$, la ordenada es \emph{compatible con
+cero} y los datos son coherentes con el modelo. Si no lo contiene, por ejemplo
+$b=(\num{3,0}\pm\num{0,5})\,\si{\hertz}$, el resultado es difícil de reconciliar
+con $b=0$ y apunta a un error sistemático, un problema de calibración o a que el
+modelo no describe adecuadamente los datos. Por eso la práctica insiste en
+comprobar esta condición.
+
+\subsubsection{Ajuste por mínimos cuadrados}
+Con $n$ pares $(x_i,y_i)$, incertidumbre común en $y_i$ y despreciable en
 $x_i$~\cite{NUM-ARG},
 \begin{equation}\label{eq:ajuste}
 \begin{gathered}
@@ -867,30 +934,15 @@ $x_i$~\cite{NUM-ARG},
 \end{equation}
 con $\nu=n-2$ grados de libertad, de modo que $\ext{a}=t_{95,\nu}\,u(a)$.
 
-\begin{table}[ht]
-\centering
-\caption{Linealizaciones empleadas; en todas la ordenada $b$ debe ser compatible con cero.}
-\label{tab:ajustes}
-\small
-\renewcommand{\arraystretch}{1.3}
-\begin{tabular}{@{}llcc@{}}
-\toprule
-Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$\\
-\midrule
-Emisor móvil & $v$ & $1-\fE/\fR$ & $\vs$\\
-Emisor móvil & $\fR$ & $(1-v/\vst)^{-1}$ & $\fE$\\
-Receptor móvil & $\fR$ & $1+v/\vst$ & $\fE$\\
-\bottomrule
-\end{tabular}
-\end{table}
-
 \textbf{Ajuste ponderado.} Las expresiones anteriores suponen que todos los
 puntos son igual de fiables y que la abscisa no tiene error. En el primer ajuste
 no se cumple ninguna de las dos condiciones. Cada punto es la media de seis
 repeticiones; su incertidumbre típica, $u^{2}=s^{2}/n+\Delta^{2}/12$, varía mucho
 de un punto a otro (de \SI{1,3}{\hertz} a \SI{30}{\hertz} en $\fR$), y la abscisa
 $1-\fE/\fR$, que hereda la incertidumbre de las frecuencias, es la variable con
-más error. Por eso empleamos mínimos cuadrados \emph{ponderados}: cada punto
+más error.
+
+Por eso, hemos decidido emplear mínimos cuadrados \emph{ponderados}: cada punto
 cuenta con un peso $w_i=1/u_i^{2}$, de forma que los puntos más precisos
 influyen más en la recta. Se minimiza
 $\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ y resulta~\cite{NUM-ARG}
@@ -903,18 +955,42 @@ $\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ y resulta~\cite{NUM-ARG}
 \end{gathered}
 \end{equation}
 donde $\langle\cdot\rangle$ denota la media ponderada con los pesos $w_i$.
-Completan el método dos precisiones.
+
+\textbf{Incertidumbre en la abscisa: varianza efectiva.} Hasta aquí solo hemos
+considerado la incertidumbre de $y$. En nuestra práctica, sin embargo, la
+abscisa también depende de magnitudes medidas (las frecuencias o la velocidad
+relativa). Un error horizontal $\delta x$ produce, sobre la recta, un error
+vertical aproximado $a\,\delta x$; al expresar ambas contribuciones como
+varianzas, y suponiendo que los errores son independientes, cada punto queda
+caracterizado por la \emph{varianza efectiva}
+\begin{equation}\label{eq:vareff}
+  u_i^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i),
+\end{equation}
+que es la que entra en los pesos, $w_i=1/u_i^{2}$. Como esta expresión contiene
+la propia pendiente, el cálculo se itera:
+\begin{enumerate}
+  \item se realiza un primer ajuste ignorando la incertidumbre de $x$;
+  \item se obtiene una pendiente provisional;
+  \item se recalculan los pesos incorporando $a^{2}u^{2}(x_i)$;
+  \item se repite el ajuste hasta que los resultados apenas cambian.
+\end{enumerate}
+La precisión de cada punto depende así tanto de su incertidumbre vertical como
+de la horizontal trasladada a la dirección vertical.
+
+\textbf{Bondad del ajuste: el $\chi^{2}$.} Una vez ajustada la recta, comprobamos
+si los puntos se dispersan a su alrededor de acuerdo con sus incertidumbres.
+Con $n$ puntos y dos parámetros ($a$ y $b$), el mínimo de $\chi^{2}$ se compara
+con los grados de libertad $\nu=n-2$~\cite{NUM-ARG}:
 \begin{itemize}
-  \item \emph{Incertidumbre en la abscisa.} Se traslada al eje de ordenadas a
-    través de la pendiente, con la \emph{varianza efectiva}
-    $u_i^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i)$. Como $a$ aparece en los pesos, el
-    cálculo se itera hasta que $a$ deja de cambiar.
-  \item \emph{Bondad del ajuste.} Si las barras de error describen bien la
-    dispersión, $\chi^{2}\approx\nu=n-2$~\cite{NUM-ARG}. Si $\chi^{2}\gg\nu$, los
-    puntos se separan de la recta más de lo que sus barras predicen, y las
-    incertidumbres de los parámetros se multiplican por $\sqrt{\chi^{2}/\nu}$
-    para no subestimarlas~\cite{HUGHES}.
+  \item si $\chi^{2}$ es del orden de $\nu$, la dispersión es compatible,
+    aproximadamente, con las incertidumbres estimadas;
+  \item si $\chi^{2}\gg\nu$, los puntos se apartan de la recta mucho más de lo
+    esperado, lo que delata errores sistemáticos o incertidumbres subestimadas.
 \end{itemize}
+El cociente $\chi^{2}/\nu$, llamado \emph{chi-cuadrado reducido}, resume la
+calidad del ajuste. Cuando es claramente mayor que la unidad, multiplicamos las
+incertidumbres de los parámetros por $\sqrt{\chi^{2}/\nu}$ para no
+subestimarlas~\cite{HUGHES}.
 
 La abscisa del primer ajuste hereda la incertidumbre de las frecuencias,
 \begin{equation}\label{eq:ux}
@@ -1055,6 +1131,7 @@ será observable si $\lvert\Delta f\rvert$ supera $\ext{\Delta f}$.
 \pendiente{tabla, gráfica y discusión}
 
 % =========================================================================
+\newpage
 \section{Discusión y conclusiones}\label{sec:discusion}
 % =========================================================================
 \begin{conclusion}[Velocidad del sonido]\label{conc:vs}
