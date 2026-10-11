@@ -23,6 +23,7 @@
 \sisetup{
   output-decimal-marker = {,},
   group-minimum-digits  = 4,
+  group-digits          = integer,
   group-separator       = {\,},
   per-mode              = symbol,
   separate-uncertainty  = true,
@@ -39,12 +40,16 @@
 \definecolor{azulclaro}{HTML}{B7CBE3}   % azul hielo
 \definecolor{grispizarra}{HTML}{5B6770} % gris pizarra
 \definecolor{grisclaro}{HTML}{E4E8EC}   % gris perla
+\definecolor{azulfondo}{HTML}{F3F7FB}   % fondo tenue de referencias y resultados
+\definecolor{acento}{HTML}{B8800A}      % acento sobrio (ámbar oscuro) para comparaciones
 \usepackage{tikz}
 \usetikzlibrary{babel, arrows.meta, calc, positioning, decorations.pathmorphing,
                 decorations.markings, patterns}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
 \usepackage{booktabs}
+\usepackage{multirow}
+\usepackage[most]{tcolorbox}
 \usepackage{array}
 \usepackage{enumitem}
 \setlist[itemize]{leftmargin=1.6em, itemsep=2pt, topsep=4pt}
@@ -130,18 +135,53 @@
 \newtheorem{resultado}[proposicion]{Resultado}
 \newtheorem{conclusion}[proposicion]{Conclusión}
 \theoremstyle{ciendef}
-\newtheorem{definicion}[proposicion]{Definición}
 \newtheorem{hipotesis}[proposicion]{Hipótesis}
 \newtheorem{calculo}[proposicion]{Cálculo de incertidumbre}
 \newtheorem{estimacion}[proposicion]{Estimación lineal}
 \theoremstyle{cienobs}
 \newtheorem{observacion}[proposicion]{Observación}
 
+% --- Referencia formalizada --------------------------------------------------
+% Caja fina con fondo tenue y título sobre el borde (como las definiciones de
+% «Leyes básicas de la electrostática»). Cuerpo en cursiva y, al pie, la fuente
+% completa con autor, título y número de cita. Comparte contador con los
+% enunciados.  Uso: \begin{referencia}[título]{clave-bib} ... \end{referencia}
+\newcounter{referencia}
+\renewcommand{\thereferencia}{\theproposicion}
+\newtcolorbox{referenciabox}[2]{%
+  enhanced, breakable, sharp corners,
+  colback=azulfondo, colframe=azulclaro, boxrule=0.4pt,
+  left=10pt, right=10pt, top=7pt, bottom=6pt,
+  before skip=14pt, after skip=12pt,
+  attach boxed title to top left={yshift*=-\tcboxedtitleheight/2, xshift=8pt},
+  boxed title style={colback=white, colframe=white, sharp corners, boxrule=0pt,
+                     left=3pt, right=3pt, top=1pt, bottom=1pt},
+  fonttitle=\bfseries\color{azulprof}, coltitle=azulprof,
+  fontupper=\itshape,
+  title={Referencia~\thereferencia\ifx\relax#1\relax\else\ \normalfont(#1)\fi},
+  after upper={\par\vspace{5pt}{\color{azulclaro}\hrule height 0.4pt}\vspace{4pt}%
+    {\upshape\footnotesize\color{grispizarra}\raggedleft
+     \citeauthor{#2}, \citetitle{#2}~\cite{#2}.\par}}}
+\newenvironment{referencia}[2][]
+  {\par\stepcounter{proposicion}\refstepcounter{referencia}\begin{referenciabox}{#1}{#2}}
+  {\end{referenciabox}}
+\crefname{referencia}{referencia}{referencias}
+\Crefname{referencia}{Referencia}{Referencias}
+
+% --- Resultado destacado ----------------------------------------------------
+% Fondo azulado tenue y filete lateral: magnitudes calculadas con su
+% incertidumbre.  Uso: \begin{destacado}[rótulo opcional] ... \end{destacado}
+\newtcolorbox{destacado}[1][]{%
+  enhanced, sharp corners, frame hidden, colback=azulfondo,
+  borderline west={1.6pt}{0pt}{azulacero},
+  left=10pt, right=8pt, top=2pt, bottom=4pt,
+  before skip=8pt, after skip=10pt,
+  before upper={\ifx\relax#1\relax\else{\scshape\small\color{azulacero}#1}\par\vspace{-4pt}\fi}}
+
 \crefname{proposicion}{proposición}{proposiciones}
 \Crefname{proposicion}{Proposición}{Proposiciones}
 \crefname{resultado}{resultado}{resultados}
 \crefname{conclusion}{conclusión}{conclusiones}
-\crefname{definicion}{definición}{definiciones}
 \crefname{hipotesis}{hipótesis}{hipótesis}
 \crefname{calculo}{cálculo}{cálculos}
 \crefname{estimacion}{estimación}{estimaciones}
@@ -160,6 +200,34 @@
 \Crefformat{equation}{Ecuación~(#2#1#3)}
 \crefrangeformat{equation}{ecuaciones~(#3#1#4)--(#5#2#6)}
 \crefmultiformat{equation}{ecuaciones~(#2#1#3)}{ y~(#2#1#3)}{, (#2#1#3)}{ y~(#2#1#3)}
+
+% --- Estilo de gráficas de datos (como en «Leyes básicas de la electrostática»)
+\pgfplotsset{
+  datos/.style={
+    tick label style={font=\scriptsize}, label style={font=\small},
+    axis lines=left, axis line style={grispizarra},
+    grid=major, grid style={grisclaro, line width=0.4pt},
+    every tick/.style={grispizarra},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.9,
+                  text opacity=1, cells={anchor=west}},
+    legend cell align=left,
+    /pgf/number format/use comma, /pgf/number format/1000 sep={\,},
+    scaled ticks=false,
+  },
+  puntoA/.style={only marks, mark=*, mark size=2.1pt, azulprof,
+    mark options={fill=azulprof, draw=white, line width=0.3pt},
+    error bars/.cd, x dir=both, x explicit, y dir=both, y explicit,
+    error bar style={line width=0.6pt, azulprof}, error mark options={rotate=90, mark size=2.2pt, line width=0.6pt, azulprof}},
+  puntoB/.style={only marks, mark=square*, mark size=1.9pt, azulacero,
+    mark options={fill=azulclaro, draw=azulacero, line width=0.5pt},
+    error bars/.cd, x dir=both, x explicit, y dir=both, y explicit,
+    error bar style={line width=0.6pt, azulacero}, error mark options={rotate=90, mark size=2.2pt, line width=0.6pt, azulacero}},
+  ajuste/.style={azulprof, line width=1.1pt},
+  teorica/.style={acento, line width=0.9pt, densely dashed},
+}
+
+% Referencia a un panel de figura: «figura 5\,(b)», enlazada en bloque
+\newcommand{\figpanel}[2]{\hyperref[#1]{figura~\ref*{#1}\,\textup{(#2)}}}
 
 % Pies de figura y tabla, en la línea del documento de referencia
 \usepackage[font=small, labelfont={sc,color=azulprof}, labelsep=period,
@@ -209,14 +277,14 @@ estimamos la velocidad del sonido en el aire mediante un ajuste lineal y la
 comparamos con el valor que predice la temperatura del laboratorio; además,
 estimamos la frecuencia de emisión en las dos configuraciones posibles. Los
 resultados se expresan con su incertidumbre típica y ampliada al
-\SI{95}{\percent}, siguiendo la \emph{Guide to the expression of uncertainty
-in measurement}.
+\SI{95}{\percent}, siguiendo \emph{Notes on Uncertainty in Measurements}.
 \end{abstract}
 
 \maketitle
 \tableofcontents
 
 % =========================================================================
+\newpage
 \section{Introducción}
 % =========================================================================
 La experiencia y su posterior análisis recogidos en este informe presentan
@@ -324,7 +392,7 @@ Cobra-3~\cite{GUION-P8}.
   \draw[grispizarra, densely dotted, line width=0.8pt]
     (3.45,0.26) .. controls (3.45,-1.0) and (5.4,-1.0) .. (5.6,-1.8);
 \end{tikzpicture}
-\caption{Esquema del montaje experimental. El emisor, solidario al coche
+\caption{Esquema de nuestro montaje experimental. El emisor, solidario al coche
 autopropulsado, se mueve con velocidad $\vE$ a lo largo del carril; el
 receptor permanece fijo (en la segunda configuración se intercambian sus
 posiciones). La barrera fotoeléctrica, situada hacia la mitad del recorrido,
@@ -334,25 +402,27 @@ líneas de puntos representan las conexiones eléctricas.}
 \label{fig:montaje}
 \end{figure}
 
+
 % =========================================================================
 \section{Fundamentos teóricos}\label{sec:fundamentos}
 % =========================================================================
-\begin{definicion}[Efecto Doppler]\label{def:doppler}
-El efecto Doppler es un fenómeno físico que describe el cambio en la
-frecuencia percibida de una onda cuando la fuente emisora de la onda y el
-observador están en movimiento relativo entre sí.
-\end{definicion}
+\begin{referencia}[Efecto Doppler]{FV6-ECJ}\label{ref:doppler}
+{El efecto Doppler es un fenómeno físico que describe el cambio en la frecuencia percibida de una onda cuando la fuente emisora de la onda y el observador están en movimiento relativo 
+entre sí. Este cambio de frecuencia no se debe a una modificación real de la frecuencia de la 
+onda emitida, sino a un cambio en la forma en que el observador percibe la onda debido al 
+movimiento. 
+La causa del efecto Doppler radica en la compresión o dilatación de las ondas debida al 
+movimiento relativo entre la fuente y el observador. Si la fuente se mueve hacia el 
+observador, las ondas se comprimen, lo que resulta en una longitud de onda más corta y una 
+frecuencia percibida más alta. Si la fuente se aleja, las ondas se dilatan, lo que resulta en una 
+longitud de onda más larga y una frecuencia percibida más baja. El efecto Doppler se aplica 
+a cualquier tipo de onda, incluyendo ondas sonoras, ondas de luz, ondas de agua, etc.}
 
-Este cambio de frecuencia no se debe a una modificación real de la frecuencia
-de la onda emitida, sino a un cambio en la forma en que el observador percibe
-la onda debido al movimiento. Su causa radica en la compresión o dilatación
-de las ondas debida al movimiento relativo entre la fuente y el observador.
-Si la fuente se mueve hacia el observador, las ondas se comprimen, lo que
-resulta en una longitud de onda más corta y una frecuencia percibida más alta
-(en ondas de sonido, más aguda); si la fuente se aleja, las ondas se dilatan,
-la longitud de onda aparente es mayor y la frecuencia menor (el sonido se hace
-más grave). El efecto se aplica a cualquier tipo de onda, incluyendo ondas
-sonoras, ondas de luz y ondas de agua~\cite{FV6-ECJ,TIPLER}. La \cref{fig:frentes}
+{Si la fuente se acerca al observador ($\vE>0$), la longitud de onda se acorta y la frecuencia se hace mayor. En ondas de sonido se aprecia una frecuencia más aguda. Por el contrario, si el emisor se aleja del receptor ($\vE<0$), la longitud de onda 
+aparente es mayor y la frecuencia menor. El sonido se hace más grave.}
+\end{referencia}
+
+La \cref{fig:frentes}
 lo ilustra para una fuente $\mathrm{S}$ que se desplaza con velocidad
 $\vE>0$: los frentes se amontonan por delante y se separan por detrás, de modo
 que $\mathrm{R}_2$ percibe una frecuencia mayor que la emitida y
@@ -523,6 +593,7 @@ ha ampliado con fines ilustrativos; en el laboratorio $|x|\ll1$.}
 \end{figure}
 
 % =========================================================================
+\newpage
 \section{Procedimiento experimental}\label{sec:procedimiento}
 % =========================================================================
 Con el programa PHYWE Measure se mide la velocidad del coche (modo
@@ -532,8 +603,10 @@ reposo (al menos seis veces) y después, para tres velocidades del coche y
 ambos sentidos de marcha, seis medidas de $v$ y de $\fR$ en cada caso. Luego se
 intercambian emisor y receptor y se repite el proceso~\cite{GUION-P8}.
 
-En primer lugar se ha comenzado la experiencia midiendo el valor de la
-temperatura del aire, $T=\pend{\ldots}\,\si{\celsius}$, a fin de determinar el
+Como la experiencia recogida en este informe se ha desarrollado a lo largo de una mañana, se ha creído preciso tomar dos medidas de temperatura: al inicio y al final de la experiencia. De este modo, podremos garantizar que la velocidad del sonido obtenida a partir de una regresión lineal se sitúe en un rango de valores teóricos.
+
+Dichas temperaturas corresponden a $T_{\mathrm{ini}}=\SI{22,1}{\celsius}$ y $T_{\mathrm{fin}}=\SI{23,5}{\celsius}$.
+A fin de determinar el
 valor teórico o valor esperado de la velocidad del sonido en el aire,
 $\vst$:
 \begin{equation}\label{eq:vs}
@@ -561,12 +634,19 @@ dicha medida:
   \;\longrightarrow\;
   u(T)=\frac{\Delta}{\sqrt{12}}\approx\SI{0,03}{\celsius}.
 \end{equation}
-En consecuencia, el registro térmico al comienzo de la experiencia ha sido
-$T=\pend{$t$}\pm\SI{0,03}{\celsius}$.
+En consecuencia, los registros térmicos al comienzo y al final de la experiencia han sido, respectivamente,
+\begin{destacado}
+\vspace{-6pt}
+\begin{equation*}
+  T_{\mathrm{ini}}=(\num{22,10}\pm\num{0,03})\,\si{\celsius},
+  \qquad
+  T_{\mathrm{fin}}=(\num{23,50}\pm\num{0,03})\,\si{\celsius}.
+\end{equation*}
+\end{destacado}
 \end{calculo}
 
 \begin{calculo}[Velocidad esperada del sonido]\label{calc:vs}
-Determinar la incertidumbre asociada a la lectura de la temperatura es un paso
+Determinar la incertidumbre asociada a cada lectura de la temperatura es un paso
 clave antes de poder hallar por propagación la incertidumbre propia de $\vst$.
 Por la \cref{eq:propagacion},
 \begin{equation*}
@@ -583,47 +663,212 @@ Sustituyendo este resultado, evaluado en la temperatura medida, y calculando
 la raíz cuadrada,
 \begin{equation}\label{eq:uvs}
   u(\vst)=\left|\frac{\partial\vst}{\partial T}\right|\frac{\SI{0,1}{\kelvin}}{\sqrt{12}}
-  \approx\frac{\SI{0,0175}{\meter\per\second}}{\sqrt{1+T/273{,}15}}
-  =\pend{\ldots}\,\si{\meter\per\second}.
+  \approx
+  \begin{cases}
+    \num{0,5833}\,\si{\meter\per\second\per\kelvin}\cdot\SI{0,0289}{\kelvin}=\SI{0,017}{\meter\per\second} & (T_{\mathrm{ini}}),\\[2pt]
+    \num{0,5819}\,\si{\meter\per\second\per\kelvin}\cdot\SI{0,0289}{\kelvin}=\SI{0,017}{\meter\per\second} & (T_{\mathrm{fin}}).
+  \end{cases}
 \end{equation}
-Luego, se espera que la velocidad del sonido en el aire para las condiciones
+Luego, se espera que la velocidad del sonido en el aire para las condiciones inicial y final
 en las que se ha encontrado el laboratorio sea
-\begin{equation}
-  \vst=\pend{$\vst$}\pm\pend{$u(\vst)$}\ \si{\meter\per\second}.
+\begin{destacado}
+\vspace{-6pt}
+\begin{equation*}
+  \vst^{\,\mathrm{ini}}=(\num{344,442}\pm\num{0,017})\,\si{\meter\per\second},
+  \qquad
+  \vst^{\,\mathrm{fin}}=(\num{345,257}\pm\num{0,017})\,\si{\meter\per\second}.
+\end{equation*}
+\end{destacado}
+Como la temperatura varió de forma gradual durante la mañana, en el análisis
+tomamos como valor de referencia el punto medio de ambos, asignándole una
+distribución uniforme entre ellos, $u^{2}=(\Delta\vst)^{2}/12+u^{2}(\vst^{\,\mathrm{ini}})$:
+\begin{destacado}[Valor de referencia]
+\begin{equation}\label{eq:vsref}
+  \vst=(\num{344,85}\pm\num{0,24})\,\si{\meter\per\second}
+  \quad(\text{incertidumbre típica}).
 \end{equation}
+\end{destacado}
 \end{calculo}
-
-\subsection{Estimación lineal}\label{sec:ajuste}
-Se ajustan rectas $y=ax+b$ por mínimos cuadrados (\cref{tab:ajustes}). Con $n$
-pares $(x_i,y_i)$, incertidumbre común en $y_i$ y despreciable en $x_i$~\cite{NUM-ARG},
-\begin{equation}\label{eq:ajuste}
-\begin{gathered}
-  a=\frac{\cov(x,y)}{\var(x)},\qquad b=\mean{y}-a\,\mean{x},\qquad
-  s_\varepsilon=\sqrt{\frac{\sum_i(y_i-ax_i-b)^{2}}{n-2}},\\[4pt]
-  u(a)=\frac{s_\varepsilon}{\sqrt{(n-1)\var(x)}},\qquad
-  u(b)=u(a)\sqrt{\mean{x^{2}}},
-\end{gathered}
+\subsection{Frecuencia de la señal en reposo}
+Antes de abordar las situaciones de movimiento relativo, se ha medido la frecuencia de la onda ultrasonido, enfrentando emisor y receptor, ambos en reposo y situando el emisor acoplado al móvil, justo en la barrera fotoeléctrica, de tal modo que al presionar espacio en el ordenador hemos obtenido valores de 40607 y 40608 Hz para las seis medidas realizadas.
+Como la dispersión no supera la resolución del contador ($\Delta f=\SI{1}{\hertz}$),
+tomamos el punto medio y combinamos dos distribuciones uniformes de anchura
+\SI{1}{\hertz} (dispersión y resolución):
+\begin{destacado}
+\begin{equation}\label{eq:fE}
+  \fE=(\num{40607,5}\pm\num{0,4})\,\si{\hertz},\qquad
+  u(\fE)=\sqrt{\tfrac{1}{12}+\tfrac{1}{12}}\ \si{\hertz}\approx\SI{0,41}{\hertz}.
 \end{equation}
-con $\nu=n-2$ grados de libertad, de modo que $\ext{a}=t_{95,\nu}\,u(a)$. Si
-las ordenadas tienen incertidumbres distintas $u_i$ se usan pesos
-$w_i=1/u_i^{2}$ y medias ponderadas en lugar de aritméticas.
+\end{destacado}
+\subsection{Medidas de velocidad y frecuencia}
+Antes de mostrar los datos obtenidos experimentalmente, es necesario determinar el criterio de signos empleado en cada situación.
+Para el caso en el que el emisor es móvil y se enfrenta a un receptor en reposo, tomamos como sentido positivo de movimiento el que se da de derecha a izquierda, es decir, cuando el emisor se acerca al receptor, pues dicha dirección es la de la propagación de la onda ultrasonido. Cuando el emisor se aleje del receptor, dicho movimiento diremos que tendrá sentido negativo.
+
+A fin de ser coherentes con este análisis, en el caso del receptor móvil enfrentado a un emisor en reposo, tomaremos como sentido positivo del movimiento aquel en el que el receptor se aleja del emisor (de izquierda a derecha), pues la onda ultrasonido se propaga en dicha dirección.
+La \cref{fig:fotos} muestra el selector mecánico de velocidad y el interruptor
+de sentido del móvil. Cada combinación de posición del selector y sentido de
+marcha da lugar a seis medidas de la velocidad y otras seis de la frecuencia
+recibida.
+
+\begin{figure}[ht]
+\centering
+\begin{minipage}[b]{0.32\textwidth}\centering
+  \includegraphics[width=\linewidth]{ima/selector_minima.jpeg}\\[2pt]
+  {\small\scshape (a)\; selector: mínima}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.32\textwidth}\centering
+  \includegraphics[width=\linewidth]{ima/selector_media.jpeg}\\[2pt]
+  {\small\scshape (b)\; selector: media}
+\end{minipage}\hfill
+\begin{minipage}[b]{0.32\textwidth}\centering
+  \includegraphics[width=\linewidth]{ima/sentido_mov.jpeg}\\[2pt]
+  {\small\scshape (c)\; sentido de marcha}
+\end{minipage}
+\caption{Controles del móvil. (a,~b)~Posiciones mínima y media del selector
+mecánico de velocidad. (c)~Interruptor que invierte el sentido de la marcha.}
+\label{fig:fotos}
+\end{figure}
+
+\subsubsection{Emisor en movimiento y receptor en reposo}
+Tras realizar las medidas de la velocidad en ambos sentidos del movimiento, y
+para cada una de las tres posiciones del control mecánico de la velocidad del
+móvil, agrupamos los datos en la \cref{tab:datosE}, junto con las frecuencias
+recogidas para ambos sentidos del movimiento y para cada posición.
 
 \begin{table}[ht]
 \centering
-\caption{Linealizaciones empleadas; en todas la ordenada $b$ debe ser compatible con cero.}
+\caption{Medidas directas con el \emph{emisor en movimiento} y el receptor en
+reposo. Sentido positivo: el emisor se acerca al receptor. Resoluciones:
+$\Delta v=\SI{0,001}{\meter\per\second}$ y $\Delta f=\SI{1}{\hertz}$.}
+\label{tab:datosE}
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}ll*{6}{c}@{}}
+\toprule
+Selector & Sentido & \multicolumn{6}{c}{Medida $i$}\\
+\cmidrule(l){3-8}
+ & & 1 & 2 & 3 & 4 & 5 & 6\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Velocidad del móvil, $\lvert v_i\rvert$ (\si{\meter\per\second})}}\\[2pt]
+Máxima & Positivo & 0,341 & 0,358 & 0,354 & 0,358 & 0,354 & 0,354\\
+Máxima & Negativo & 0,381 & 0,388 & 0,382 & 0,382 & 0,380 & 0,382\\
+Media & Positivo & 0,227 & 0,222 & 0,226 & 0,222 & 0,223 & 0,225\\
+Media & Negativo & 0,241 & 0,240 & 0,240 & 0,244 & 0,244 & 0,243\\
+Mínima & Positivo & 0,127 & 0,128 & 0,127 & 0,127 & 0,128 & 0,126\\
+Mínima & Negativo & 0,127 & 0,129 & 0,131 & 0,127 & 0,128 & 0,128\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Frecuencia recibida, $f_{\mathrm{R},i}$ (\si{\hertz})}}\\[2pt]
+Máxima & Positivo & 40699 & 40708 & 40705 & 40703 & 40677 & 40686\\
+Máxima & Negativo & 40452 & 40346 & 40382 & 40293 & 40428 & 40265\\
+Media & Positivo & 40655 & 40664 & 40657 & 40661 & 40652 & 40656\\
+Media & Negativo & 40601 & 40587 & 40586 & 40586 & 40595 & 40590\\
+Mínima & Positivo & 40635 & 40642 & 40652 & 40627 & 40629 & 40627\\
+Mínima & Negativo & 40608 & 40607 & 40605 & 40601 & 40603 & 40601\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Emisor en reposo y receptor en movimiento}
+De nuevo, mostramos los resultados experimentales organizados en una tabla
+(\cref{tab:datosR}), tanto para las velocidades como para las frecuencias, pero
+teniendo en cuenta en este caso que el sentido positivo del movimiento ahora es
+de izquierda a derecha, es decir, el receptor se aleja del emisor.
+
+\begin{table}[ht]
+\centering
+\caption{Medidas directas con el emisor en reposo y el \emph{receptor en
+movimiento}. Sentido positivo: el receptor se aleja del emisor. Resoluciones:
+$\Delta v=\SI{0,001}{\meter\per\second}$ y $\Delta f=\SI{1}{\hertz}$.}
+\label{tab:datosR}
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabular}{@{}ll*{6}{c}@{}}
+\toprule
+Selector & Sentido & \multicolumn{6}{c}{Medida $i$}\\
+\cmidrule(l){3-8}
+ & & 1 & 2 & 3 & 4 & 5 & 6\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Velocidad del móvil, $\lvert v_i\rvert$ (\si{\meter\per\second})}}\\[2pt]
+Máxima & Negativo & 0,350 & 0,351 & 0,349 & 0,347 & 0,342 & 0,344\\
+Máxima & Positivo & 0,378 & 0,381 & 0,374 & 0,368 & 0,365 & 0,369\\
+Media & Negativo & 0,234 & 0,228 & 0,229 & 0,226 & 0,227 & 0,226\\
+Media & Positivo & 0,250 & 0,251 & 0,251 & 0,253 & 0,251 & 0,252\\
+Mínima & Negativo & 0,136 & 0,140 & 0,139 & 0,140 & 0,139 & 0,140\\
+Mínima & Positivo & 0,147 & 0,146 & 0,145 & 0,145 & 0,146 & 0,150\\
+\midrule
+\multicolumn{8}{@{}l}{\textit{Frecuencia recibida, $f_{\mathrm{R},i}$ (\si{\hertz})}}\\[2pt]
+Máxima & Negativo & 40799 & 40720 & 40733 & 40800 & 40676 & 40708\\
+Máxima & Positivo & 40429 & 40520 & 40438 & 40500 & 40557 & 40489\\
+Media & Negativo & 40655 & 40663 & 40660 & 40662 & 40654 & 40670\\
+Media & Positivo & 40582 & 40584 & 40588 & 40588 & 40583 & 40583\\
+Mínima & Negativo & 40637 & 40649 & 40652 & 40646 & 40637 & 40642\\
+Mínima & Positivo & 40596 & 40611 & 40599 & 40598 & 40598 & 40610\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{observacion}[Velocidad relativa]\label{obs:signos}
+En el análisis empleamos siempre la velocidad relativa $v=\vE-\vR$ de la
+\cref{sec:fundamentos}, positiva cuando emisor y receptor se acercan. Con
+emisor móvil, $v=\vE$ y su signo coincide con el sentido de las tablas; con
+receptor móvil, $v=-\vR$, de modo que el sentido «positivo» (alejamiento)
+corresponde a $v<0$.
+\end{observacion}
+
+\subsection{Estimación lineal}\label{sec:ajuste}
+Cada configuración se resume en seis puntos (tres posiciones del selector por
+dos sentidos), formados por las medias de las seis repeticiones. Su
+incertidumbre típica combina la dispersión y la resolución,
+$u^{2}=s^{2}/n+\Delta^{2}/12$~\cite{NUM-ARG}. Las rectas se ajustan por mínimos
+cuadrados ponderados, con pesos $w_i=1/u_i^{2}$~\cite{NUM-ARG}:
+\begin{equation}\label{eq:ajuste}
+\begin{gathered}
+  a=\frac{\langle xy\rangle-\langle x\rangle\langle y\rangle}{\langle x^{2}\rangle-\langle x\rangle^{2}},\qquad
+  b=\langle y\rangle-a\langle x\rangle,\qquad
+  u(a)=\frac{1}{\sqrt{\sum_i w_i}\,\sqrt{\langle x^{2}\rangle-\langle x\rangle^{2}}},\\[4pt]
+  \chi^{2}=\sum_i w_i\,(y_i-ax_i-b)^{2},\qquad \nu=n-2,
+\end{gathered}
+\end{equation}
+donde $\langle\cdot\rangle$ denota la media ponderada. Tres detalles completan el
+método.
+\begin{itemize}
+  \item Si la abscisa tiene incertidumbre apreciable, se usa la
+    \emph{varianza efectiva} $u_i^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i)$, iterando
+    hasta que $a$ converge.
+  \item Cuando el modelo impone $b=0$, se ajusta $y=ax$, con
+    $a=\sum w_ix_iy_i/\sum w_ix_i^{2}$, $u(a)=(\sum w_ix_i^{2})^{-1/2}$ y $\nu=n-1$.
+  \item Si $\chi^{2}$ resulta mucho mayor que $\nu$, la dispersión real supera
+    la prevista por las barras de error: las incertidumbres de los parámetros se
+    multiplican entonces por $\sqrt{\chi^{2}/\nu}$~\cite{HUGHES}.
+\end{itemize}
+La incertidumbre ampliada es $\ext{a}=t_{95,\nu}\,u(a)$.
+
+\begin{table}[ht]
+\centering
+\caption{Linealizaciones empleadas. Según el modelo, todas las rectas pasan por
+el origen.}
 \label{tab:ajustes}
 \small
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}llccc@{}}
 \toprule
-Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$\\
+Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$ & Ajuste\\
 \midrule
-Emisor móvil & $v$ & $1-\fE/\fR$ & $\vs$\\
-Emisor móvil & $\fR$ & $(1-v/\vst)^{-1}$ & $\fE$\\
-Receptor móvil & $\fR$ & $1+v/\vst$ & $\fE$\\
+Emisor móvil & $v$ & $1-\fE/\fR$ & $\vs$ & $y=ax+b$, varianza efectiva\\
+Emisor móvil & $\fR$ & $(1-v/\vst)^{-1}$ & $\fE$ & $y=ax$\\
+Receptor móvil & $\fR$ & $1+v/\vst$ & $\fE$ & $y=ax$\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+En el primer ajuste la abscisa toma valores a ambos lados del cero, y dejar libre
+$b$ permite detectar un posible desplazamiento de $\fE$. En los otros dos, la
+abscisa apenas se separa de la unidad ($|x-1|\lesssim10^{-3}$); una ordenada libre
+obligaría a extrapolar mil veces el rango de los datos y $a$ y $b$ quedarían
+completamente correlacionados, de modo que imponemos $b=0$, como exige el
+modelo.
 
 La abscisa del primer ajuste hereda la incertidumbre de las frecuencias,
 \begin{equation}\label{eq:ux}
@@ -637,32 +882,304 @@ $\Delta f=\fR-\fE\,(1-v/\vst)^{-1}$ tiene, con $x\equiv v/\vst$,
 \end{equation}
 
 % =========================================================================
+\newpage
 \section{Análisis de datos y resultados}\label{sec:analisis}
 % =========================================================================
-\textbf{Emisor móvil y receptor en reposo.} Se ajusta $v$ frente a
-$1-\fE/\fR$ para estimar $\vs$ con su intervalo al $\SI{95}{\percent}$ y se
-compara con $\vst$; después se ajusta $\fR$ frente a $(1-v/\vst)^{-1}$ para
-estimar $\fE$ y contrastarla con la medida directa.
-\pendiente{resultados y gráficas}
+\subsection{Emisor en movimiento y receptor en reposo}
+Con los datos de las velocidades y las frecuencias, vamos a tomar los valores
+medios y a representar los resultados. La \cref{tab:mediasE} recoge la velocidad
+media y la frecuencia media registradas para cada sentido del movimiento y para
+cada posición del control mecánico, junto con la abscisa del primer ajuste.
 
-\textbf{Emisor en reposo y receptor móvil.} Se ajusta $\fR$ frente a
-$1+v/\vst$ para estimar $\fE$ y contrastarla con la medida directa.
-\pendiente{resultados y gráfica}
+\begin{table}[ht]
+\centering
+\caption{Valores medios con el emisor en movimiento (incertidumbres típicas).
+La velocidad relativa $v$ lleva el signo del sentido de marcha.}
+\label{tab:mediasE}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Selector & Sentido & $v$ (\si{\meter\per\second}) & $\mean{f}_{\mathrm{R}}$ (\si{\hertz}) & $10^{3}\,(1-\fE/\fR)$\\
+\midrule
+Máxima & Positivo & \num{0,3532 +- 0,0026} & \num{40696,3 +- 5,0} & \num{2,18 +- 0,12}\\
+Máxima & Negativo & \num{-0,3825 +- 0,0012} & \num{40361 +- 30} & \num{-6,11 +- 0,75}\\
+Media & Positivo & \num{0,22417 +- 0,00092} & \num{40657,5 +- 1,8} & \num{1,230 +- 0,045}\\
+Media & Negativo & \num{-0,24200 +- 0,00083} & \num{40590,8 +- 2,5} & \num{-0,411 +- 0,062}\\
+Mínima & Positivo & \num{0,12717 +- 0,00042} & \num{40635,3 +- 4,1} & \num{0,68 +- 0,10}\\
+Mínima & Negativo & \num{-0,12833 +- 0,00068} & \num{40604,2 +- 1,3} & \num{-0,082 +- 0,033}\\
+\bottomrule
+\end{tabular}
+\end{table}
 
-\textbf{Término cuadrático.} Se representan las diferencias $\Delta f$ con sus
-incertidumbres (\cref{eq:udf}) frente a $v/\vst$, sin ajuste: el término
-$-\fE(v/\vs)^{2}$ de la \cref{eq:receptor} solo será observable si
-$|\Delta f|$ supera $\ext{\Delta f}$. \pendiente{gráfica y discusión}
+\textbf{Velocidad del sonido.} La \cref{fig:ajuste1} representa $v$ frente a
+$1-\fE/\fR$. Las barras horizontales, que proceden de las frecuencias, son las
+dominantes; por eso el ajuste usa la varianza efectiva.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[datos, name=principal, width=0.86\textwidth, height=6.6cm,
+      xmin=-1, xmax=2.6, ymin=-0.45, ymax=0.45, clip=true,
+      xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
+      legend pos=north west, ytick={-0.4,-0.2,0,0.2,0.4},
+      yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
+    \addplot[teorica, domain=-1:2.6, samples=2] {0.34485*x};
+    \addlegendentry{$v=\vst\,x$ (valor teórico)}
+    \addplot[ajuste, domain=-1:2.6, samples=2] {0.244440*x+(-0.102352)};
+    \addlegendentry{ajuste ponderado}
+    \addplot[puntoA] coordinates {(2.18283,0.35317) +- (0.12266,0.00258) (1.22979,0.22417) +- (0.04508,0.00092) (0.68495,0.12717) +- (0.10128,0.00042)};
+    \addlegendentry{acercamiento}
+    \addplot[puntoB] coordinates {(-0.41060,-0.24200) +- (0.06208,0.00083) (-0.08209,-0.12833) +- (0.03253,0.00068)};
+    \addlegendentry{alejamiento}
+    % punto anómalo fuera de escala
+    \draw[-{Stealth[length=5pt]}, azulacero, line width=0.8pt]
+      (axis cs:-0.55,-0.38250) -- (axis cs:-0.97,-0.38250);
+    \node[azulacero, font=\scriptsize, anchor=west, align=left]
+      at (axis cs:-0.53,-0.38250) {máxima, alejamiento:\\ $10^{3}x=\num{-6,11}$, fuera de escala};
+  \end{axis}
+  \begin{axis}[datos, at={(principal.south west)}, anchor=north west, yshift=-4pt,
+      width=0.86\textwidth, height=3.2cm, xmin=-1, xmax=2.6, ymin=-5, ymax=8.5,
+      xlabel={$10^{3}\,x=10^{3}\,(1-\fE/\fR)$}, ylabel={$r_i/u_i$},
+      ytick={-3,0,3,6}]
+    \addplot[grispizarra, line width=0.5pt, densely dashed, domain=-1:2.6, samples=2] {0};
+    \addplot[only marks, mark=*, mark size=1.7pt, azulprof,
+      error bars/.cd, y dir=both, y explicit,
+      error bar style={line width=0.5pt, azulprof}, error mark options={rotate=90, mark size=1.8pt, azulprof}]
+      coordinates {(2.18283,-2.5936) +- (0,1) (1.22979,2.3434) +- (0,1) (-0.41060,-2.5847) +- (0,1) (0.68495,2.5075) +- (0,1) (-0.08209,-0.7411) +- (0,1)};
+    \draw[-{Stealth[length=5pt]}, azulacero, line width=0.8pt]
+      (axis cs:-0.55,6.5996) -- (axis cs:-0.97,6.5996);
+    \node[azulacero, font=\scriptsize, anchor=west] at (axis cs:-0.53,6.5996) {$r/u=\num{6,6}$};
+  \end{axis}
+\end{tikzpicture}
+\caption{Velocidad relativa del emisor frente a $1-\fE/\fR$. Los círculos
+corresponden al acercamiento y los cuadrados al alejamiento; las barras indican
+la incertidumbre típica. La recta continua es el ajuste ponderado (con los seis
+puntos) y la discontinua, la predicción con $\vst$. El punto de alejamiento a
+velocidad máxima queda fuera de la ventana y se indica con una flecha. Debajo,
+los residuos normalizados $r_i/u_i$.}
+\label{fig:ajuste1}
+\end{figure}
+
+\begin{destacado}[Ajuste 1 --- emisor móvil]
+\vspace{-4pt}
+\begin{equation}\label{eq:vsajuste}
+  \vs=(244\pm89)\,\si{\meter\per\second},\qquad
+  b=(\num{-0,102}\pm\num{0,072})\,\si{\meter\per\second}.
+\end{equation}
+{\small Incertidumbres ampliadas al \SI{95}{\percent}: $\nu=4$, $t_{95,4}=\num{2,78}$.}
+\end{destacado}
+El ajuste da $\chi^{2}=\num{69}$ para $\nu=4$, así que hemos aplicado el factor
+$\sqrt{\chi^{2}/\nu}=\num{4,2}$ y la incertidumbre típica queda en
+$u(\vs)=\SI{32}{\meter\per\second}$. El resultado se queda por debajo de
+$\vst=\SI{344,85}{\meter\per\second}$: la diferencia,
+\SI{101}{\meter\per\second}, supera ligeramente el intervalo al
+\SI{95}{\percent}. La ordenada tampoco es nula. Una ordenada $b<0$ equivale a
+que la frecuencia emitida durante las medidas fuera $\fE(1+|b|/\vs)\approx
+\SI{40625}{\hertz}$, unos \SI{17}{\hertz} por encima de la medida en reposo.
+Los residuos muestran además que el punto de alejamiento a velocidad máxima
+($r/u\approx\num{6,6}$) es anómalo: sus seis frecuencias oscilan entre 40265 y
+40452~Hz.
+
+\textbf{Frecuencia de emisión.} La \figpanel{fig:ajustes23}{a} representa $\fR$
+frente a $(1-v/\vst)^{-1}$ con $\vst$ de la \cref{eq:vsref}. Según la
+\cref{eq:emisor}, la pendiente de la recta por el origen es $\fE$.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[datos, width=0.475\textwidth, height=6cm,
+      xmin=-1.35, xmax=1.35, ymin=40320, ymax=40790,
+      xlabel={$10^{3}\,\bigl[(1-v/\vst)^{-1}-1\bigr]$}, ylabel={$\fR$ (\si{\hertz})},
+      legend pos=north west, ytick={40400,40500,40600,40700},
+      yticklabel style={/pgf/number format/1000 sep={\,}},
+      title={\small\scshape (a)\; emisor móvil}, title style={yshift=-4pt}]
+    \addplot[teorica, domain=-1.35:1.35, samples=2] {40607.5*(1+x/1000)};
+    \addlegendentry{$\fE$ en reposo}
+    \addplot[ajuste, domain=-1.35:1.35, samples=2] {40623.37*(1+x/1000)};
+    \addlegendentry{ajuste}
+    \addplot[puntoA] coordinates {(1.02517,40696.33333) +- (0.00000,4.98609) (0.65046,40657.50000) +- (0.00000,1.78885) (0.36890,40635.33333) +- (0.00000,4.09810)};
+    \addplot[puntoB] coordinates {(-1.10795,40361.00000) +- (-0.00000,30.15433) (-0.70126,40590.83333) +- (-0.00000,2.48551) (-0.37200,40604.16667) +- (-0.00000,1.25610)};
+  \end{axis}
+\end{tikzpicture}\hfill
+\begin{tikzpicture}
+  \begin{axis}[datos, width=0.475\textwidth, height=6cm,
+      xmin=-1.35, xmax=1.35, ymin=40320, ymax=40790,
+      xlabel={$10^{3}\,(v/\vst)$}, ylabel={$\fR$ (\si{\hertz})},
+      legend pos=north west, ytick={40400,40500,40600,40700},
+      yticklabel style={/pgf/number format/1000 sep={\,}},
+      title={\small\scshape (b)\; receptor móvil}, title style={yshift=-4pt}]
+    \addplot[teorica, domain=-1.35:1.35, samples=2, forget plot] {40607.5*(1+x/1000)};
+    \addplot[ajuste, domain=-1.35:1.35, samples=2, forget plot] {40619.08*(1+x/1000)};
+    \addplot[puntoA] coordinates {(1.00672,40739.33333) +- (0.00000,20.53439) (0.66212,40660.66667) +- (0.00000,2.40717) (0.40307,40643.83333) +- (0.00000,2.56472)};
+    \addlegendentry{acercamiento}
+    \addplot[puntoB] coordinates {(-1.08018,40488.83333) +- (-0.00000,19.92430) (-0.72882,40584.66667) +- (-0.00000,1.12299) (-0.42482,40602.00000) +- (-0.00000,2.73557)};
+    \addlegendentry{alejamiento}
+  \end{axis}
+\end{tikzpicture}
+\caption{Frecuencia recibida frente a la abscisa de cada linealización, en
+milésimas respecto de la unidad: (a)~emisor móvil, frente a $(1-v/\vst)^{-1}$;
+(b)~receptor móvil, frente a $1+v/\vst$. Las rectas continuas son los ajustes
+por el origen y las discontinuas usan la $\fE$ medida en reposo. Las barras
+horizontales son menores que el símbolo.}
+\label{fig:ajustes23}
+\end{figure}
+
+\begin{destacado}[Ajuste 2 --- emisor móvil]
+\vspace{-4pt}
+\begin{equation}\label{eq:fEajuste2}
+  \fE=(\num{40623}\pm\num{12})\,\si{\hertz}.
+\end{equation}
+{\small Incertidumbre ampliada al \SI{95}{\percent}: $\nu=5$, $t_{95,5}=\num{2,57}$, $\chi^{2}/\nu=\num{24,7}$.}
+\end{destacado}
+El valor es \SI{16}{\hertz} mayor que el medido en reposo,
+$\fE=(\num{40607,5}\pm\num{0,8})\,\si{\hertz}$ al \SI{95}{\percent}, de modo que
+ambos no son compatibles. Aun así, la discrepancia relativa es solo de
+$\num{4e-4}$, y coincide con el desplazamiento que sugería la ordenada del
+primer ajuste.
+
+\subsection{Emisor en reposo y receptor en movimiento}
+La \cref{tab:mediasR} recoge los valores medios con el receptor en movimiento,
+con la velocidad relativa ya expresada según la \cref{obs:signos}.
+
+\begin{table}[ht]
+\centering
+\caption{Valores medios con el receptor en movimiento (incertidumbres típicas).
+La velocidad relativa es $v=-\vR$ y la abscisa del ajuste es $1+v/\vst$.}
+\label{tab:mediasR}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Selector & Sentido & $v$ (\si{\meter\per\second}) & $\mean{f}_{\mathrm{R}}$ (\si{\hertz}) & $10^{3}\,(v/\vst)$\\
+\midrule
+Máxima & Negativo & \num{0,3472 +- 0,0015} & \num{40739 +- 21} & 1,007\\
+Máxima & Positivo & \num{-0,3725 +- 0,0026} & \num{40489 +- 20} & $-$1,080\\
+Media & Negativo & \num{0,2283 +- 0,0013} & \num{40660,7 +- 2,4} & 0,662\\
+Media & Positivo & \num{-0,25133 +- 0,00051} & \num{40584,7 +- 1,1} & $-$0,729\\
+Mínima & Negativo & \num{0,13900 +- 0,00070} & \num{40643,8 +- 2,6} & 0,403\\
+Mínima & Positivo & \num{-0,14650 +- 0,00082} & \num{40602,0 +- 2,7} & $-$0,425\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+La \figpanel{fig:ajustes23}{b} muestra $\fR$ frente a $1+v/\vst$. Ajustando la
+recta por el origen se obtiene:
+\begin{destacado}[Ajuste 3 --- receptor móvil]
+\vspace{-4pt}
+\begin{equation}\label{eq:fEajuste3}
+  \fE=(\num{40619}\pm\num{10})\,\si{\hertz}.
+\end{equation}
+{\small Incertidumbre ampliada al \SI{95}{\percent}: $\nu=5$, $t_{95,5}=\num{2,57}$, $\chi^{2}/\nu=\num{20,0}$.}
+\end{destacado}
+De nuevo queda unos \SI{12}{\hertz} por encima del valor en reposo y es
+compatible con el del ajuste anterior. Las tres estimaciones (ajustes 1, 2 y 3)
+apuntan a que, durante las medidas en movimiento, el emisor oscilaba en torno a
+\SIrange{40619}{40625}{\hertz}.
+
+\subsection{Análisis del término cuadrático}
+Con los valores directamente medidos de $\fR$, $\fE$ y $v$, y con $\vst$,
+calculamos las diferencias $\Delta f=\fR-\fE\,(1-v/\vst)^{-1}$ y sus
+incertidumbres mediante la \cref{eq:udf} (\cref{tab:cuadratico}), y las
+representamos sin ajuste en la \cref{fig:cuadratico-datos}. Según la
+\cref{eq:receptor}, el valor esperado es $-\fE\,(v/\vs)^{2}/(1-v/\vs)$.
+
+\begin{table}[ht]
+\centering
+\caption{Diferencias $\Delta f$ con el receptor en movimiento (incertidumbre
+típica) y término cuadrático predicho.}
+\label{tab:cuadratico}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Selector & Sentido & $10^{3}\,(v/\vst)$ & $\Delta f$ (\si{\hertz}) & $-\fE\,\frac{(v/\vs)^{2}}{1-v/\vs}$ (\si{\hertz})\\
+\midrule
+Máxima & Negativo & 1,007 & \num{91 +- 21} & $-$0,041\\
+Máxima & Positivo & $-$1,080 & \num{-75 +- 20} & $-$0,047\\
+Media & Negativo & 0,662 & \num{26,3 +- 2,4} & $-$0,018\\
+Media & Positivo & $-$0,729 & \num{6,7 +- 1,2} & $-$0,022\\
+Mínima & Negativo & 0,403 & \num{20,0 +- 2,6} & $-$0,007\\
+Mínima & Positivo & $-$0,425 & \num{11,7 +- 2,8} & $-$0,007\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+  \begin{axis}[datos, width=0.78\textwidth, height=6cm,
+      xmin=-1.35, xmax=1.35, ymin=-110, ymax=125,
+      xlabel={$10^{3}\,(v/\vst)$}, ylabel={$\Delta f$ (\si{\hertz})},
+      legend pos=north west]
+    \addplot[grispizarra, line width=0.5pt, densely dotted, domain=-1.35:1.35, samples=2,
+      forget plot] {0};
+    \addplot[teorica, domain=-1.35:1.35, samples=60] {-40607.5*(x/1000)^2/(1-x/1000)};
+    \addlegendentry{término cuadrático predicho}
+    \addplot[puntoA] coordinates {(1.00672,90.91179) +- (0.00000,20.53921) (0.66212,26.26163) +- (0.00000,2.44619) (0.40307,19.95889) +- (0.00000,2.59835)};
+    \addlegendentry{acercamiento}
+    \addplot[puntoB] coordinates {(-1.08018,-74.85054) +- (-0.00000,19.93076) (-0.72882,6.74068) +- (-0.00000,1.19648) (-0.42482,11.74367) +- (-0.00000,2.76753)};
+    \addlegendentry{alejamiento}
+  \end{axis}
+\end{tikzpicture}
+\caption{Diferencias $\Delta f=\fR-\fE\,(1-v/\vst)^{-1}$ con el receptor en
+movimiento, sin ajuste. La curva discontinua es el término cuadrático predicho,
+que en este rango no supera \SI{0,05}{\hertz} y es indistinguible del cero.}
+\label{fig:cuadratico-datos}
+\end{figure}
+
+El término cuadrático no supera \SI{0,05}{\hertz} en valor absoluto, veinte
+veces menos que la resolución del contador y entre veinte y cuatrocientas veces
+menos que las incertidumbres de $\Delta f$. Las diferencias observadas, de
+$-75$ a $+91$~Hz, no reflejan ese término: proceden de la dispersión de las
+frecuencias a velocidad máxima y del desplazamiento de $\fE$ ya identificado.
+Para resolverlo haría falta medir frecuencias con una precisión relativa de
+$(v/\vs)^{2}\sim10^{-6}$.
 
 % =========================================================================
 \section{Discusión y conclusiones}\label{sec:discusion}
 % =========================================================================
-\begin{conclusion}\label{conc:final}
-\pendiente{compatibilidad de $\vs$ con $\vst$; frecuencias de emisión
-estimadas frente a las medidas; observabilidad del término cuadrático}
+Los datos confirman el efecto Doppler: en todas las series la frecuencia
+recibida aumenta en el acercamiento y disminuye en el alejamiento, y el
+desplazamiento crece con la velocidad del móvil. Cuantitativamente, sin embargo, aparecen discrepancias
+que conviene explicar.
+
+\begin{conclusion}[Velocidad del sonido]\label{conc:vs}
+El ajuste de $v$ frente a $1-\fE/\fR$ da $\vs=(244\pm89)$~m/s al
+\SI{95}{\percent}, por debajo del valor esperado $\vst=(\num{344,85}\pm\num{0,46})$~m/s.
+La diferencia supera por poco el intervalo de confianza, así que, con estos
+datos, ambos valores no son compatibles.
 \end{conclusion}
 
+\begin{conclusion}[Frecuencia de emisión]\label{conc:fE}
+Los ajustes por el origen dan $\fE=(\num{40623}\pm\num{12})$~Hz con el emisor
+móvil y $\fE=(\num{40619}\pm\num{10})$~Hz con el receptor móvil, compatibles
+entre sí y con lo que indica la ordenada del primer ajuste. Ambos superan en
+\SIrange{12}{16}{\hertz} (unas cuatro diezmilésimas) a la medida en reposo, por
+lo que la frecuencia del emisor se desplazó durante la sesión.
+\end{conclusion}
+
+\begin{conclusion}[Término cuadrático]\label{conc:cuad}
+El término $(v/\vs)^{2}$ no es observable con este montaje: a las velocidades del
+móvil vale menos de \SI{0,05}{\hertz}, muy por debajo de la resolución
+(\SI{1}{\hertz}) y de la dispersión de las medidas.
+\end{conclusion}
+
+\begin{observacion}[Fuentes de error]
+Las principales son:
+\begin{itemize}
+  \item la deriva de la frecuencia del emisor a lo largo de la mañana, en la que
+    pudo influir el aumento de \SI{1,4}{\celsius} de temperatura;
+  \item la sincronización manual de la lectura de frecuencia con el paso por la
+    barrera, especialmente a velocidad máxima, donde el tiempo útil es menor;
+  \item las reflexiones del ultrasonido en el carril y en el entorno.
+\end{itemize}
+Medir $\fE$ inmediatamente antes de cada serie, o intercalar medidas en reposo,
+permitiría corregir la deriva y reduciría el sesgo de $\vs$.
+\end{observacion}
+
 % =========================================================================
+\newpage
 %                              BIBLIOGRAFÍA
 % =========================================================================
 \printbibliography[title={Referencias}]
