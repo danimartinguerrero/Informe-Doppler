@@ -85,7 +85,10 @@
   \let\@evenfoot\@empty \let\@oddfoot\@empty}
 \makeatother
 \numberwithin{equation}{section}
-\setcounter{tocdepth}{1}
+\setcounter{tocdepth}{2}
+\makeatletter
+\def\l@subsection{\@tocline{2}{0pt}{2.6pc}{5pc}{}}
+\makeatother
 \makeatletter
 \def\@@and{y}
 \renewcommand{\keywordsname}{Palabras clave}
