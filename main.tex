@@ -166,6 +166,25 @@
   {\par\stepcounter{proposicion}\refstepcounter{referencia}\begin{referenciabox}{#1}{#2}}
   {\end{referenciabox}}
 \crefname{referencia}{referencia}{referencias}
+
+% --- Método (caja azulada para los fundamentos del tratamiento de datos) -----
+\newcounter{metodo}
+\renewcommand{\themetodo}{\theproposicion}
+\newtcolorbox{metodobox}[1]{%
+  enhanced, breakable, sharp corners,
+  colback=azulfondo, colframe=azulclaro, boxrule=0.4pt,
+  left=10pt, right=10pt, top=7pt, bottom=5pt,
+  before skip=14pt, after skip=12pt,
+  attach boxed title to top left={yshift*=-\tcboxedtitleheight/2, xshift=8pt},
+  boxed title style={colback=white, colframe=white, sharp corners, boxrule=0pt,
+                     left=3pt, right=3pt, top=1pt, bottom=1pt},
+  fonttitle=\bfseries\color{azulprof}, coltitle=azulprof,
+  title={Método~\themetodo\ifx\relax#1\relax\else\ \normalfont(#1)\fi}}
+\newenvironment{metodo}[1][]
+  {\par\stepcounter{proposicion}\refstepcounter{metodo}\begin{metodobox}{#1}}
+  {\end{metodobox}}
+\crefname{metodo}{método}{métodos}
+\Crefname{metodo}{Método}{Métodos}
 \Crefname{referencia}{Referencia}{Referencias}
 
 % --- Resultado destacado ----------------------------------------------------
@@ -852,6 +871,8 @@ En el análisis empleamos siempre la velocidad relativa $v=\vE-\vR$ de la
 emisor móvil, $v=\vE$ y su signo coincide con el sentido de las tablas; con el receptor móvil y el emisor en reposo, el alejamiento en el sentido positivo del eje implica \(v_R>0\), por lo que la velocidad relativa definida como \(v=v_E-v_R\) es negativa.
 \end{observacion}
 
+\newpage
+
 \subsection{Estimación lineal}\label{sec:ajuste}
 Las tres cuestiones del análisis se resuelven ajustando una recta $y=ax+b$ por
 mínimos cuadrados. Antes de dar las fórmulas, conviene escribir cada relación
@@ -912,13 +933,15 @@ Caso & Configuración & Ordenada $y$ & Abscisa $x$ & Pendiente $a$ & Ordenada $b
 
 \subsubsection{La ordenada en el origen}
 Las tres relaciones teóricas tienen la forma $y=ax$: el modelo predice $b=0$.
-El ajuste, sin embargo, deja libre la ordenada, y su valor experimental sirve
-de control. Si el intervalo $b\pm\ext{b}$ contiene el cero, por ejemplo
+El ajuste, sin embargo, deja libre la ordenada, y su valor experimental nos servirá
+de control.
+
+Si el intervalo $b\pm\ext{b}$ contiene el cero, por ejemplo
 $b=(\num{0,2}\pm\num{0,5})\,\si{\hertz}$, la ordenada es \emph{compatible con
 cero} y los datos son coherentes con el modelo. Si no lo contiene, por ejemplo
 $b=(\num{3,0}\pm\num{0,5})\,\si{\hertz}$, el resultado es difícil de reconciliar
-con $b=0$ y apunta a un error sistemático, un problema de calibración o a que el
-modelo no describe adecuadamente los datos. Por eso la práctica insiste en
+con $b=0$ y apunta a un error sistemático o accidental que hayamos podido cometer en el laboratorio, un problema de calibración o a que el
+modelo no describe adecuadamente los datos. Por eso en la práctica insistimos en
 comprobar esta condición.
 
 \subsubsection{Ajuste por mínimos cuadrados}
@@ -934,18 +957,17 @@ $x_i$~\cite{NUM-ARG},
 \end{equation}
 con $\nu=n-2$ grados de libertad, de modo que $\ext{a}=t_{95,\nu}\,u(a)$.
 
-\textbf{Ajuste ponderado.} Las expresiones anteriores suponen que todos los
-puntos son igual de fiables y que la abscisa no tiene error. En el primer ajuste
-no se cumple ninguna de las dos condiciones. Cada punto es la media de seis
-repeticiones; su incertidumbre típica, $u^{2}=s^{2}/n+\Delta^{2}/12$, varía mucho
-de un punto a otro (de \SI{1,3}{\hertz} a \SI{30}{\hertz} en $\fR$), y la abscisa
-$1-\fE/\fR$, que hereda la incertidumbre de las frecuencias, es la variable con
-más error.
+Las expresiones anteriores suponen que todos los puntos son igual de fiables y
+que la abscisa no tiene error. En el primer ajuste no se cumple ninguna de las
+dos condiciones: la incertidumbre de cada punto, $u^{2}=s^{2}/n+\Delta^{2}/12$,
+varía de \SI{1,3}{\hertz} a \SI{30}{\hertz} en $\fR$, y la abscisa $1-\fE/\fR$,
+que hereda la incertidumbre de las frecuencias, es la variable con más error.
+Por eso completamos el ajuste con los tres elementos siguientes.
 
-Por eso, hemos decidido emplear mínimos cuadrados \emph{ponderados}: cada punto
-cuenta con un peso $w_i=1/u_i^{2}$, de forma que los puntos más precisos
-influyen más en la recta. Se minimiza
-$\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ y resulta~\cite{NUM-ARG}
+\begin{metodo}[Mínimos cuadrados ponderados]\label{met:pesos}
+Cada punto recibe un peso $w_i=1/u_i^{2}$, de forma que los más precisos
+influyen más en la recta. Minimizando $\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ se
+obtiene~\cite{NUM-ARG}
 \begin{equation}\label{eq:ajustepesos}
 \begin{gathered}
   a=\frac{\langle xy\rangle-\langle x\rangle\langle y\rangle}{\langle x^{2}\rangle-\langle x\rangle^{2}},\qquad
@@ -955,42 +977,30 @@ $\chi^{2}=\sum_iw_i(y_i-ax_i-b)^{2}$ y resulta~\cite{NUM-ARG}
 \end{gathered}
 \end{equation}
 donde $\langle\cdot\rangle$ denota la media ponderada con los pesos $w_i$.
+\end{metodo}
 
-\textbf{Incertidumbre en la abscisa: varianza efectiva.} Hasta aquí solo hemos
-considerado la incertidumbre de $y$. En nuestra práctica, sin embargo, la
-abscisa también depende de magnitudes medidas (las frecuencias o la velocidad
-relativa). Un error horizontal $\delta x$ produce, sobre la recta, un error
-vertical aproximado $a\,\delta x$; al expresar ambas contribuciones como
-varianzas, y suponiendo que los errores son independientes, cada punto queda
-caracterizado por la \emph{varianza efectiva}
+\begin{metodo}[Varianza efectiva]\label{met:vareff}
+La abscisa también procede de magnitudes medidas. Un error horizontal
+$\delta x$ equivale, sobre la recta, a uno vertical $a\,\delta x$; sumando ambas
+contribuciones como varianzas independientes, cada punto queda caracterizado por
 \begin{equation}\label{eq:vareff}
   u_i^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i),
 \end{equation}
-que es la que entra en los pesos, $w_i=1/u_i^{2}$. Como esta expresión contiene
-la propia pendiente, el cálculo se itera:
-\begin{enumerate}
-  \item se realiza un primer ajuste ignorando la incertidumbre de $x$;
-  \item se obtiene una pendiente provisional;
-  \item se recalculan los pesos incorporando $a^{2}u^{2}(x_i)$;
-  \item se repite el ajuste hasta que los resultados apenas cambian.
-\end{enumerate}
-La precisión de cada punto depende así tanto de su incertidumbre vertical como
-de la horizontal trasladada a la dirección vertical.
+que es la que entra en los pesos. Como depende de la propia pendiente, el
+cálculo se itera: un primer ajuste sin la incertidumbre de $x$ da una pendiente
+provisional, con ella se recalculan los pesos y se repite hasta que los
+resultados apenas cambian.
+\end{metodo}
 
-\textbf{Bondad del ajuste: el $\chi^{2}$.} Una vez ajustada la recta, comprobamos
-si los puntos se dispersan a su alrededor de acuerdo con sus incertidumbres.
-Con $n$ puntos y dos parámetros ($a$ y $b$), el mínimo de $\chi^{2}$ se compara
-con los grados de libertad $\nu=n-2$~\cite{NUM-ARG}:
-\begin{itemize}
-  \item si $\chi^{2}$ es del orden de $\nu$, la dispersión es compatible,
-    aproximadamente, con las incertidumbres estimadas;
-  \item si $\chi^{2}\gg\nu$, los puntos se apartan de la recta mucho más de lo
-    esperado, lo que delata errores sistemáticos o incertidumbres subestimadas.
-\end{itemize}
-El cociente $\chi^{2}/\nu$, llamado \emph{chi-cuadrado reducido}, resume la
-calidad del ajuste. Cuando es claramente mayor que la unidad, multiplicamos las
-incertidumbres de los parámetros por $\sqrt{\chi^{2}/\nu}$ para no
-subestimarlas~\cite{HUGHES}.
+\begin{metodo}[Bondad del ajuste]\label{met:chi2}
+El mínimo de $\chi^{2}$ se compara con los grados de libertad,
+$\nu=n-2$~\cite{NUM-ARG}. Si $\chi^{2}\approx\nu$, la dispersión de los puntos es
+coherente con sus incertidumbres; si $\chi^{2}\gg\nu$, los puntos se apartan de
+la recta más de lo esperado, lo que delata errores sistemáticos o incertidumbres
+que hemos subestimado. En ese caso, cuando el \emph{chi-cuadrado reducido}
+$\chi^{2}/\nu$ es claramente mayor que la unidad, multiplicamos las
+incertidumbres de los parámetros por $\sqrt{\chi^{2}/\nu}$~\cite{HUGHES}.
+\end{metodo}
 
 La abscisa del primer ajuste hereda la incertidumbre de las frecuencias,
 \begin{equation}\label{eq:ux}
@@ -1036,8 +1046,11 @@ Mínima & Negativo & \num{-0,1283 +- 0,0007} & \num{40604,2 +- 1,3} & \num{-0,09
 \end{table}
 
 \textbf{Velocidad del sonido.} La \cref{fig:ajuste1} representa $v$ frente a
-$1-\fE/\fR$. Las barras horizontales, que proceden de las frecuencias, son las
-dominantes; por eso el ajuste usa la varianza efectiva.
+$1-\fE/\fR$. Si se cumple la ley de Doppler, los puntos deben alinearse sobre
+una recta que pasa por el origen y cuya pendiente es la velocidad del sonido
+(\cref{eq:lin1}). Las barras horizontales, que proceden de las frecuencias, son
+las dominantes, de ahí que el ajuste use la varianza efectiva
+(\cref{met:vareff}).
 
 \begin{figure}[ht]
 \centering
@@ -1074,21 +1087,19 @@ dominantes; por eso el ajuste usa la varianza efectiva.
     \node[azulacero, font=\scriptsize, anchor=west] at (axis cs:-0.53,6.602) {$r/u=\num{6,6}$};
   \end{axis}
 \end{tikzpicture}
-\caption{Velocidad relativa del emisor frente a $1-\fE/\fR$. Los círculos
-corresponden al acercamiento y los cuadrados al alejamiento; las barras indican
-la incertidumbre típica. La recta continua es el ajuste ponderado (con los seis
-puntos) y la discontinua, la predicción con $\vst$. El punto de alejamiento a
-velocidad máxima queda fuera de la ventana y se indica con una flecha. Debajo,
-los residuos normalizados $r_i/u_i$.}
+\caption{Velocidad relativa del emisor frente a $1-\fE/\fR$. Círculos:
+acercamiento; cuadrados: alejamiento; barras: incertidumbre típica. Recta
+continua: ajuste ponderado con los seis puntos; discontinua: predicción con
+$\vst$. El punto de alejamiento a velocidad máxima, fuera de la ventana, se
+señala con una flecha. Debajo, los residuos normalizados $r_i/u_i$.}
 \label{fig:ajuste1}
 \end{figure}
 
-Antes de ponderar, el ajuste básico de la \cref{eq:ajuste} da
-$\vs=(\num{0,8}\pm\num{0,7})\times10^{2}\,\si{\meter\per\second}$ al \SI{95}{\percent}. Ese ajuste trata
-igual el punto de alejamiento a velocidad máxima, cuya frecuencia tiene una
-incertidumbre de \SI{30}{\hertz}, que puntos veinte veces más precisos, y es
-ese punto el que arrastra la pendiente. El ajuste ponderado con varianza
-efectiva corrige este desequilibrio:
+Un ajuste sin pesos (\cref{eq:ajuste}) daría
+$\vs=(\num{0,8}\pm\num{0,7})\times10^{2}\,\si{\meter\per\second}$, porque trata
+igual el punto de alejamiento a velocidad máxima, con una incertidumbre de
+\SI{30}{\hertz} en la frecuencia, que puntos veinte veces más precisos, y ese
+punto arrastra la pendiente. Con pesos y varianza efectiva obtenemos:
 \begin{destacado}[Ajuste 1 --- emisor móvil]
 \vspace{-4pt}
 \begin{equation}\label{eq:vsajuste}
@@ -1099,18 +1110,28 @@ efectiva corrige este desequilibrio:
 $t_{95,4}=\num{2,78}$. Sin redondear, $\vs=\SI{244,7}{\meter\per\second}$ y
 $\ext{\vs}=\SI{88,6}{\meter\per\second}$.}
 \end{destacado}
-El ajuste da $\chi^{2}=\num{69}$ para $\nu=4$; las barras de error no explican
-toda la dispersión, así que hemos aplicado el factor $\sqrt{\chi^{2}/\nu}=\num{4,2}$
-y la incertidumbre típica queda en $u(\vs)\approx\SI{3e1}{\meter\per\second}$. El
-resultado se queda por debajo de $\vst=\SI{344,9}{\meter\per\second}$: la
-diferencia, de unos \SI{100}{\meter\per\second}, supera ligeramente el intervalo
-al \SI{95}{\percent}. La ordenada tampoco es nula. Una ordenada $b<0$ equivale a
-que la frecuencia emitida durante las medidas fuera
-$\fE(1+|b|/\vs)\approx\SI{40625}{\hertz}$, unos \SI{17}{\hertz} por encima de la
-medida en reposo. Los residuos muestran además que el punto de alejamiento a
-velocidad máxima ($r/u\approx\num{6,6}$) es anómalo: sus seis frecuencias
-oscilan entre 40265 y 40452~Hz.
+La gráfica se resume en cuatro observaciones.
+\begin{itemize}
+  \item \emph{Comportamiento cualitativo.} $v$ y $1-\fE/\fR$ crecen juntos y con
+    el mismo signo: la frecuencia aumenta al acercarse el emisor y disminuye al
+    alejarse, tanto más cuanto mayor es la velocidad.
+  \item \emph{Pendiente.} La recta ajustada es menos empinada que la teórica:
+    $\vs$ queda unos \SI{100}{\meter\per\second} por debajo de
+    $\vst=\SI{344,9}{\meter\per\second}$, una diferencia que supera
+    ligeramente el intervalo al \SI{95}{\percent}.
+  \item \emph{Ordenada.} $b$ no es compatible con cero. Equivale a que, durante
+    las series en movimiento, el emisor emitiera a
+    $\fE(1+|b|/\vs)\approx\SI{40625}{\hertz}$, unos \SI{17}{\hertz} por encima
+    del valor en reposo: un error sistemático que desplaza todos los puntos en
+    horizontal.
+  \item \emph{Dispersión.} Los residuos rondan $\pm\num{2,5}$ y el punto anómalo
+    llega a $\num{6,6}$; sus seis frecuencias oscilan entre 40265 y 40452~Hz. En
+    conjunto, $\chi^{2}=\num{69}$ para $\nu=4$, por lo que hemos multiplicado las
+    incertidumbres por $\sqrt{\chi^{2}/\nu}=\num{4,2}$
+    (\cref{met:chi2}); así, $u(\vs)\approx\SI{3e1}{\meter\per\second}$.
+\end{itemize}
 
+\medskip
 \textbf{Frecuencia de emisión.} Se representa $\fR$ frente a $(1-v/\vst)^{-1}$,
 con $\vst$ de la \cref{eq:vsref}; según la \cref{eq:emisor}, la pendiente de la
 recta es $\fE$, que se compara con el valor medido en reposo (\cref{eq:fE}).
