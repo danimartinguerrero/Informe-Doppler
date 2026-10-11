@@ -624,6 +624,9 @@ entradas no correlacionadas, la incertidumbre típica se propaga como
 y la incertidumbre ampliada al $\SI{95}{\percent}$ es $\ext{y}=t_{95,\nu}\,u(y)$,
 con $t_{95,\nu}$ el factor de cobertura de Student para $\nu$ grados de
 libertad~\cite{NUM-ARG}; el resultado se expresa como $y\pm\ext{y}$.
+Las incertidumbres se dan con una sola cifra significativa, salvo cuando la
+primera es un 1, en cuyo caso se conservan dos; el valor se redondea a la
+misma posición decimal~\cite{ERR-MP}.
 
 \begin{calculo}[Lectura de la temperatura]\label{calc:T}
 Obtenida la lectura de temperatura, $T$, con una resolución del termómetro
@@ -686,7 +689,7 @@ tomamos como valor de referencia el punto medio de ambos, asignándole una
 distribución uniforme entre ellos, $u^{2}=(\Delta\vst)^{2}/12+u^{2}(\vst^{\,\mathrm{ini}})$:
 \begin{destacado}[Valor de referencia]
 \begin{equation}\label{eq:vsref}
-  \vst=(\num{344,85}\pm\num{0,24})\,\si{\meter\per\second}
+  \vst=(\num{344,9}\pm\num{0,2})\,\si{\meter\per\second}
   \quad(\text{incertidumbre típica}).
 \end{equation}
 \end{destacado}
@@ -946,10 +949,10 @@ sentido de marcha.}
 \toprule
 Selector & Sentido & $v$ (\si{\meter\per\second}) & $\mean{f}_{\mathrm{R}}$ (\si{\hertz}) & $10^{3}\,(1-\fE/\fR)$\\
 \midrule
-Máxima & Positivo & \num{0,3532 +- 0,0026} & \num{40696 +- 5} & \num{2,18 +- 0,12}\\
+Máxima & Positivo & \num{0,353 +- 0,003} & \num{40696 +- 5} & \num{2,18 +- 0,12}\\
 Máxima & Negativo & \num{-0,3825 +- 0,0012} & \num{40360 +- 30} & \num{-6,1 +- 0,8}\\
 Media & Positivo & \num{0,2242 +- 0,0009} & \num{40657,5 +- 1,8} & \num{1,23 +- 0,04}\\
-Media & Negativo & \num{-0,2420 +- 0,0008} & \num{40590,8 +- 2,5} & \num{-0,41 +- 0,06}\\
+Media & Negativo & \num{-0,2420 +- 0,0008} & \num{40591 +- 2} & \num{-0,41 +- 0,06}\\
 Mínima & Positivo & \num{0,1272 +- 0,0004} & \num{40635 +- 4} & \num{0,68 +- 0,10}\\
 Mínima & Negativo & \num{-0,1283 +- 0,0007} & \num{40604,2 +- 1,3} & \num{-0,09 +- 0,03}\\
 \bottomrule
@@ -1022,8 +1025,8 @@ $\ext{\vs}=\SI{88,6}{\meter\per\second}$.}
 \end{destacado}
 El ajuste da $\chi^{2}=\num{69}$ para $\nu=4$; las barras de error no explican
 toda la dispersión, así que hemos aplicado el factor $\sqrt{\chi^{2}/\nu}=\num{4,2}$
-y la incertidumbre típica queda en $u(\vs)=\SI{32}{\meter\per\second}$. El
-resultado se queda por debajo de $\vst=\SI{344,85}{\meter\per\second}$: la
+y la incertidumbre típica queda en $u(\vs)\approx\SI{3e1}{\meter\per\second}$. El
+resultado se queda por debajo de $\vst=\SI{344,9}{\meter\per\second}$: la
 diferencia, de unos \SI{100}{\meter\per\second}, supera ligeramente el intervalo
 al \SI{95}{\percent}. La ordenada tampoco es nula. Una ordenada $b<0$ equivale a
 que la frecuencia emitida durante las medidas fuera
