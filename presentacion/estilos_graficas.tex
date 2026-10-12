@@ -1,0 +1,28 @@
+% --- Estilo de gráficas de datos (como en «Leyes básicas de la electrostática»)
+\pgfplotsset{
+  datos/.style={
+    tick label style={font=\scriptsize}, label style={font=\small},
+    axis lines=left, axis line style={grispizarra},
+    grid=major, grid style={grisclaro, line width=0.4pt},
+    every tick/.style={grispizarra},
+    legend style={font=\scriptsize, draw=none, fill=white, fill opacity=0.9,
+                  text opacity=1, cells={anchor=west}},
+    legend cell align=left,
+    /pgf/number format/use comma, /pgf/number format/1000 sep={\,},
+    scaled ticks=false,
+  },
+  puntoA/.style={only marks, mark=*, mark size=2.1pt, azulprof,
+    mark options={fill=azulprof, draw=white, line width=0.3pt},
+    error bars/.cd, x dir=both, x explicit, y dir=both, y explicit,
+    error bar style={line width=0.6pt, azulprof}, error mark options={rotate=90, mark size=2.2pt, line width=0.6pt, azulprof}},
+  puntoB/.style={only marks, mark=square*, mark size=1.9pt, azulacero,
+    mark options={fill=azulclaro, draw=azulacero, line width=0.5pt},
+    error bars/.cd, x dir=both, x explicit, y dir=both, y explicit,
+    error bar style={line width=0.6pt, azulacero}, error mark options={rotate=90, mark size=2.2pt, line width=0.6pt, azulacero}},
+  ajuste/.style={azulprof, line width=1.1pt},
+  teorica/.style={acento, line width=0.9pt, densely dashed},
+}
+
+% Referencia a un panel de figura: «figura 5\,(b)», enlazada en bloque
+\newcommand{\figpanel}[2]{\hyperref[#1]{figura~\ref*{#1}\,\textup{(#2)}}}
+

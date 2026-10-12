@@ -1,0 +1,30 @@
+\begin{tikzpicture}
+  \begin{axis}[datos, scale only axis, name=principal, width=7.4cm, height=3.3cm,
+      xmin=-1, xmax=2.6, ymin=-0.45, ymax=0.45, clip=true,
+      xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
+      legend pos=north west, ytick={-0.4,-0.2,0,0.2,0.4},
+      yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
+    \addplot[teorica, domain=-1:2.6, samples=2] {0.34485*x};
+    \addlegendentry{$v=\vst\,x$ (valor teórico)}
+    \addplot[ajuste, domain=-1:2.6, samples=2] {0.2446553*x+(-0.1014381)};
+    \addlegendentry{ajuste ponderado}
+    \addplot[puntoA] coordinates {(2.17874,0.35317) +- (0.12257,0.00258) (1.22569,0.22417) +- (0.04482,0.00092) (0.68085,0.12717) +- (0.10117,0.00042)};
+    \addlegendentry{acercamiento}
+    \addplot[puntoB] coordinates {(-0.41471,-0.24200) +- (0.06189,0.00083) (-0.08620,-0.12833) +- (0.03217,0.00068)};
+    \addlegendentry{alejamiento}
+    \draw[-{Stealth[length=5pt]}, azulacero, line width=0.8pt]
+      (axis cs:-0.55,-0.3825) -- (axis cs:-0.97,-0.3825);
+  \end{axis}
+  \begin{axis}[datos, at={(principal.south west)}, anchor=north west, yshift=-4pt,
+      scale only axis, width=7.4cm, height=1.0cm, xmin=-1, xmax=2.6, ymin=-5, ymax=8.5,
+      xlabel={$10^{3}\,x=10^{3}\,(1-\fE/\fR)$}, ylabel={$r_i/u_i$},
+      ytick={-3,0,3,6}]
+    \addplot[grispizarra, line width=0.5pt, densely dashed, domain=-1:2.6, samples=2] {0};
+    \addplot[only marks, mark=*, mark size=1.7pt, azulprof,
+      error bars/.cd, y dir=both, y explicit,
+      error bar style={line width=0.5pt, azulprof}, error mark options={rotate=90, mark size=1.8pt, azulprof}]
+      coordinates {(2.17874,-2.6060) +- (0,1) (1.22569,2.3389) +- (0,1) (-0.41471,-2.5786) +- (0,1) (0.68085,2.5059) +- (0,1) (-0.08620,-0.7351) +- (0,1)};
+    \draw[-{Stealth[length=5pt]}, azulacero, line width=0.8pt]
+      (axis cs:-0.55,6.602) -- (axis cs:-0.97,6.602);
+      \end{axis}
+\end{tikzpicture}
