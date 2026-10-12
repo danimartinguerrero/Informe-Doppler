@@ -1,24 +1,29 @@
-# Plantilla de ajustes ponderados (Práctica 8, efecto Doppler)
+# Plantillas de gráficas con ajuste ponderado (Práctica 8, efecto Doppler)
 
-`ajuste_ponderado.py` hace los ajustes lineales del informe con el mismo método
-que el primer ajuste y escribe las figuras en pgfplots con el mismo estilo.
+Para hacer gráficas con **el mismo estilo que las del informe** (colores, tipografía,
+barras de error, panel de residuos y caja azulada con el resultado).
 
-## Uso
+Instala lo necesario una vez: `pip install numpy scipy matplotlib`
 
-1. Instala lo necesario: `pip install numpy scipy matplotlib`
-2. Abre `ajuste_ponderado.py` y, en la sección **1. CONFIGURACIÓN**, elige:
-   - `CASO`: 2 (emisor móvil, frecuencia), 3 (receptor móvil) o 4 (término cuadrático);
-   - `MODELO`: `"origen"` (recta por el origen, recomendado en los casos 2 y 3) o `"libre"`;
-   - `EXCLUIR`: series que quieras descartar, por ejemplo `[0, 1]` para las de velocidad máxima.
-   Los datos de las tablas del informe ya están cargados; solo hay que cambiarlos si se corrige alguno.
-3. Ejecuta `python ajuste_ponderado.py`.
-4. En la carpeta `salida/` aparecen:
-   - `figura_casoN.tex`: la figura, lista para `\input{figura_casoN}` en `main.tex`;
-   - `resultado_casoN.tex`: la caja azul con el resultado redondeado;
-   - `vista_casoN.png`: una vista previa rápida.
-   Por pantalla se imprimen todos los números sin redondear (pendiente, χ², factor
-   √(χ²/ν), incertidumbre ampliada y compatibilidad con la referencia).
+## `mi_grafica.py`: para meter tus propios datos
 
-Copia los `.tex` junto a `main.tex` (en Overleaf, súbelos al proyecto) y añade las
-líneas `\input{...}` donde vayan los resultados. Los estilos `datos`, `puntoA`,
-`puntoB`, `ajuste` y `teorica` ya están definidos en el preámbulo del informe.
+1. Abre `mi_grafica.py` y rellena la sección **TUS DATOS**:
+   - los puntos: `X`, `UX`, `Y`, `UY`, escritos a mano o calculados a partir de las
+     lecturas brutas con `media(lecturas, resolucion)`;
+   - si quieres, `GRUPOS` (0 = círculos, 1 = cuadrados) y sus nombres en la leyenda;
+   - `MODELO`: `"libre"` (y = a x + b), `"origen"` (y = a x) o `None` (sin ajuste);
+   - una curva teórica opcional, la referencia con la que comparar y los textos
+     (ejes, pie de figura, título de la caja).
+   Viene rellenado con un ejemplo para que veas cómo se escribe todo.
+2. Ejecuta `python mi_grafica.py`.
+3. En `salida/` aparecen `NOMBRE.tex` (la figura), `NOMBRE_resultado.tex` (la caja con
+   el resultado) y `NOMBRE.png` (vista previa). Por pantalla salen todos los números.
+4. Sube los `.tex` a Overleaf, junto a `main.tex`, y escribe donde quieras la figura:
+   `\input{NOMBRE}` y `\input{NOMBRE_resultado}`.
+
+Los cálculos están en `herramientas.py`, comentados; no hace falta tocarlo.
+
+## `ajuste_ponderado.py`: los casos del informe ya preparados
+
+Si solo quieres rehacer uno de los ajustes del informe (casos 1–4) con los datos de las
+tablas, basta con elegir `CASO` y `MODELO` al principio y ejecutarlo.
