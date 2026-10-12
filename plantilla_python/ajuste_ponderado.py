@@ -34,6 +34,13 @@ Casos (véase la tabla de linealizaciones del informe):
        (término cuadrático), con la curva teórica -fE (v/vs)^2/(1 - v/vs).
 
 Requisitos: numpy y scipy (y matplotlib solo para la vista previa).
+
+Cómo está pensado
+-----------------
+Te he dejado comentarios por todo el código explicando qué hago en cada paso y,
+sobre todo, por qué. No hace falta entenderlo todo para usarlo: con tocar la
+sección 1 basta. Pero si algún número te sale raro, leyendo los comentarios
+deberías poder seguir el cálculo de principio a fin.
 """
 
 import math
@@ -46,6 +53,10 @@ from scipy import stats
 # 1. CONFIGURACIÓN (EDITAR AQUÍ)
 # =============================================================================
 
+# Lo primero es decirle al script qué recta quieres. Para tus ajustes serán el
+# caso 2 (emisor móvil) y el 3 (receptor móvil); el 4 es la gráfica del término
+# cuadrático, que no lleva ajuste. El 1 es el mío, por si quieres comprobar que te
+# salen los mismos números que en el informe (v_s = 244,7 m/s).
 CASO = 3            # 1, 2, 3 o 4 (véase arriba)
 
 # Modelo de la recta:
@@ -59,6 +70,10 @@ MODELO = "origen"
 # Ejemplo: EXCLUIR = [0, 1] descarta las dos series a velocidad máxima.
 EXCLUIR = []
 
+# Estos son los valores con los que comparamos los resultados. f_E es la frecuencia
+# que medimos con todo en reposo (media de las seis lecturas) y ṽ_s la velocidad del
+# sonido que sale de la temperatura del laboratorio. No los cambies salvo que se
+# corrija algo en el informe.
 # Magnitudes de referencia (valores del informe)
 FE, U_FE = 40607.667, 0.357        # Hz, frecuencia de emisión en reposo (tipo A + B)
 VS_REF, U_VS_REF = 344.85, 0.236   # m/s, velocidad del sonido de referencia
@@ -67,6 +82,9 @@ VS_REF, U_VS_REF = 344.85, 0.236   # m/s, velocidad del sonido de referencia
 RES_V = 0.001   # m/s
 RES_F = 1.0     # Hz
 
+# Aquí van los datos tal cual los apuntamos. Ya están metidos los de las tablas del
+# informe, así que en principio no tienes que escribir nada. Si quieres cambiar
+# algo, respeta el formato: seis velocidades y seis frecuencias por serie.
 # Datos brutos: (selector, sentido, [6 velocidades en m/s], [6 frecuencias en Hz]).
 # «sentido» se indica como "acercamiento" o "alejamiento": el script asigna el
 # signo de la velocidad relativa v (positiva al acercarse emisor y receptor).
@@ -109,15 +127,43 @@ CARPETA_SALIDA = Path(__file__).with_name("salida")
 # =============================================================================
 
 
+# -----------------------------------------------------------------------------
+# ¿Por qué u^2 = s^2/n + Δ^2/12?
+#
+# Cada punto de la gráfica es la media de seis lecturas, y su incertidumbre
+# tiene dos partes que no tienen nada que ver entre sí:
+#
+#   1) La dispersión de las lecturas (tipo A). Si repites la medida, no sale
+#      siempre lo mismo. La desviación típica s nos dice cuánto bailan las
+#      lecturas sueltas, pero a nosotros nos interesa la MEDIA, que es más fiable
+#      que una lectura sola: su incertidumbre es s/sqrt(n). Por eso promediar
+#      seis medidas ayuda.
+#
+#   2) La resolución del aparato (tipo B). El contador marca de 1 Hz en 1 Hz y el
+#      temporizador de 0,001 en 0,001 m/s; dentro de ese escalón no sabemos nada.
+#      Lo tratamos como si el valor real pudiera estar en cualquier punto del
+#      escalón con la misma probabilidad (distribución uniforme), y eso da una
+#      varianza de Δ^2/12. Es lo mismo que hicimos con el termómetro.
+#
+# Como las dos cosas son independientes, se suman las VARIANZAS (los cuadrados),
+# no las incertidumbres. Ojo, el segundo término no es un adorno: si las seis
+# lecturas fueran iguales, s valdría 0 y, sin él, diríamos que la incertidumbre
+# es nula, que es mentira. Es justo lo que nos pasó con f_E en reposo.
+# -----------------------------------------------------------------------------
 def media_con_incertidumbre(valores, resolucion):
     """Media, desviación típica y u^2 = s^2/n + Δ^2/12 (notas de incertidumbres)."""
     x = np.asarray(valores, float)
     n = len(x)
+    # ddof=1 hace que divida entre n-1 y no entre n: es la desviación típica
+    # «muestral», la que viene en las notas.
     s = x.std(ddof=1)
     u = math.sqrt(s**2 / n + resolucion**2 / 12)
     return x.mean(), s, u
 
 
+# Para presentar los resultados: la incertidumbre con una cifra significativa,
+# salvo que empiece por 1, que entonces dejamos dos (0,0118 -> 0,012, pero
+# 88,6 -> 9·10^1). El valor se redondea a la misma posición decimal.
 def redondea(valor, incertidumbre):
     """Redondeo del informe: 1 cifra significativa en u (2 si la primera es un 1)."""
     exp = math.floor(math.log10(abs(incertidumbre)))
@@ -136,6 +182,10 @@ def coma(x, d):
 # 3. PREPARACIÓN DE LOS PUNTOS SEGÚN EL CASO
 # =============================================================================
 
+# Aquí convierto las seis lecturas de cada serie en un único punto (media ±
+# incertidumbre) y le pongo signo a la velocidad. En el informe usamos siempre la
+# velocidad RELATIVA v: positiva cuando emisor y receptor se acercan y negativa
+# cuando se alejan. Así la misma fórmula vale para los dos montajes.
 datos = DATOS_EMISOR if CASO in (1, 2) else DATOS_RECEPTOR
 series = [s for i, s in enumerate(datos) if i not in EXCLUIR]
 
@@ -152,6 +202,14 @@ for selector, sentido, vel, frec in series:
     uf.append(umf)
 v, uv, f, uf, acerc = map(np.array, (v, uv, f, uf, acerc))
 
+# Cada caso es una de las rectas de la tabla de linealizaciones del informe. Lo que
+# cambia es qué pongo en cada eje. La abscisa x no es un dato directo: se calcula
+# con magnitudes medidas, así que también tiene incertidumbre. La saco propagando
+# (derivada parcial al cuadrado por la incertidumbre al cuadrado, y se suman).
+#
+# Un detalle de la gráfica: en los casos 2 y 3 la x vale 0,999... o 1,001...,
+# y si la pintara tal cual todos los puntos caerían casi en el mismo sitio. Por eso
+# en el eje represento 10^3 (x - 1), que es lo mismo pero se lee mucho mejor.
 if CASO == 1:
     y, uy = v, uv
     x = 1 - FE / f
@@ -202,6 +260,31 @@ else:
 # =============================================================================
 
 
+# -----------------------------------------------------------------------------
+# El ajuste ponderado, paso a paso.
+#
+# No todos los puntos son igual de fiables: hay series con 1 Hz de incertidumbre
+# y otras con 30 Hz. Si las tratáramos igual, un punto malo nos podría arrastrar
+# la recta entera (eso me pasaba en mi ajuste antes de ponderar). Por eso cada
+# punto pesa w = 1/u^2: uno con el doble de incertidumbre pesa cuatro veces menos.
+#
+# Además, la x también tiene error. Si mueves un punto un poco en horizontal, sobre
+# una recta de pendiente a eso equivale a moverlo a·δx en vertical. Así que la
+# incertidumbre que uso para el peso es la «varianza efectiva»:
+#       u_i^2 = u^2(y_i) + a^2 u^2(x_i)
+# El lío es que para calcularla necesito la pendiente a, que es justo lo que
+# busco. Se resuelve iterando: empiezo con una pendiente aproximada, calculo los
+# pesos, recalculo la pendiente, y repito hasta que deja de cambiar (en la
+# práctica converge en unas pocas vueltas).
+#
+# Dos modelos posibles:
+#   - "libre":  y = a x + b. Se ajustan dos parámetros, así que quedan n - 2
+#               grados de libertad. Sirve para ver si b sale compatible con 0.
+#   - "origen": y = a x, que es lo que dice la teoría. Un solo parámetro, n - 1
+#               grados de libertad. En tus casos (2 y 3) es lo recomendable,
+#               porque como x está pegada a 1, dejar b libre obliga a extrapolar
+#               muchísimo y a y b se vuelven inseparables.
+# -----------------------------------------------------------------------------
 def ajuste_ponderado(x, ux, y, uy, modelo):
     """Devuelve a, u(a), b, u(b), chi2, nu e incertidumbres efectivas u_i."""
     n = len(x)
@@ -254,11 +337,23 @@ for e, xi, uxi, yi, uyi in zip(etiquetas, xs, uxs, y, uy):
 
 if CASO in (1, 2, 3):
     a, ua, b, ub, chi2, nu, ue = ajuste_ponderado(x, ux, y, uy, MODELO)
+    # ¿Se ajusta bien la recta? Si las barras de error están bien estimadas,
+    # chi2 debería salir parecido a nu. Si sale mucho mayor (a nosotros nos sale
+    # 17-20 veces más), los puntos se separan de la recta más de lo que dicen sus
+    # barras, y la incertidumbre de la pendiente calculada solo con los pesos se
+    # queda corta. Lo honesto es inflarla multiplicando por sqrt(chi2/nu). Si chi2
+    # es menor que nu, no toco nada.
     factor = max(1.0, math.sqrt(chi2 / nu)) if nu > 0 else 1.0
     ua_f, ub_f = ua * factor, ub * factor
+    # Para dar el intervalo al 95 % multiplico por la t de Student, no por 2:
+    # con tan pocos puntos la t es bastante mayor (2,57 con nu = 5, 4,30 con nu = 2).
     t95 = stats.t.ppf(0.975, nu)
     Ua, Ub = t95 * ua_f, t95 * ub_f
+    # Residuos normalizados: cuántas «barras de error» se aparta cada punto de la
+    # recta. Entre -2 y 2 es normal; si alguno se va a 5 o 6, ese punto es sospechoso.
     residuos = (y - a * x - b) / ue
+    # Comparo con la referencia: si la diferencia es menor que la incertidumbre
+    # ampliada, decimos que son compatibles al 95 %.
     ref = VS_REF if CASO == 1 else FE
     print(f"\n  Modelo: {'y = a x + b' if MODELO == 'libre' else 'y = a x'}   nu = {nu}")
     print(f"  a = {a:.4f}   u(a) = {ua:.4f}   chi2 = {chi2:.3f}   chi2/nu = {chi2/nu:.3f}")
@@ -280,6 +375,13 @@ else:
 # =============================================================================
 
 
+# -----------------------------------------------------------------------------
+# A partir de aquí no hay física: solo escribo la figura en código pgfplots para
+# que, al compilarla dentro del informe, salga con exactamente el mismo estilo que
+# la mía (colores, tipografía, barras de error, panel de residuos...). Uso los
+# estilos que ya están definidos en el preámbulo de main.tex, así que no hay que
+# configurar nada en LaTeX: basta con \input{figura_casoN}.
+# -----------------------------------------------------------------------------
 def coords(px, py, ex, ey):
     return " ".join(f"({a_:.6f},{b_:.6f}) +- ({c_:.6f},{d_:.6f})"
                     for a_, b_, c_, d_ in zip(px, py, ex, ey))
@@ -390,6 +492,8 @@ if con_residuos:
 # 6. VISTA PREVIA CON MATPLOTLIB (misma paleta; tipografía aproximada)
 # =============================================================================
 
+# La vista previa en PNG es solo para que veas rápido cómo queda sin compilar el
+# informe. La que va al documento es la del .tex; esta se parece pero no es idéntica.
 if GENERAR_PNG:
     try:
         import matplotlib
