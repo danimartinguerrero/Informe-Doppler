@@ -1,4 +1,4 @@
-\documentclass[11pt]{beamer}
+\documentclass[10pt]{beamer}
 
 % =========================================================================
 %  Redondeo y ajuste por mínimos cuadrados ponderados
@@ -182,13 +182,7 @@ def redondea(valor, incertidumbre):
     return f"{v:.{d}f}".replace(".", ","), f"{u:.{d}f}".replace(".", ",")
   \end{codigo}
   Recibe el valor y su incertidumbre \resalta{sin redondear} y devuelve dos
-  textos listos para el informe. Los pasos son:
-  \begin{enumerate}
-    \item localizar la primera cifra significativa;
-    \item ver si es un 1;
-    \item decidir dónde cortar;
-    \item redondear y escribir con coma decimal.
-  \end{enumerate}
+  textos listos para el informe.
 \end{frame}
 
 \begin{frame}[fragile]{Paso 1: posición de la primera cifra}
@@ -240,8 +234,6 @@ exp = math.floor(math.log10(abs(incertidumbre)))
     \item En los negativos, «hacia abajo» significa \emph{alejándose del cero}:
       $-1{,}93$ pasa a $-2$, no a $-1$, y así debe ser, porque el 1 de $0{,}0118$
       está en las centésimas.
-    \item A ojo es fácil ver dónde empieza un número; el logaritmo es la forma
-      matemática de que el ordenador lo averigüe para cualquier valor.
   \end{itemize}
 \end{frame}
 
@@ -280,8 +272,6 @@ decimales = -(exp - 1) if primera == 1 else -exp
       B & $1$ & 8 & $-1$ \quad (decenas)\\
     \end{tabular}
   \end{block}
-  Un número de decimales negativo indica que se redondea a la izquierda de la
-  coma.
 \end{frame}
 
 \begin{frame}[fragile]{Paso 4: redondeo y escritura}
@@ -295,8 +285,6 @@ return f"{v:.{d}f}".replace(".", ","), f"{u:.{d}f}".replace(".", ",")
       posición}.
     \item \cod{max(decimales, 0)}: si se redondea a las decenas, no hay
       decimales que escribir.
-    \item El formato escribe exactamente \texttt{d} decimales y \cod{replace}
-      cambia el punto por la coma.
   \end{itemize}
   \begin{block}{}
     \centering
@@ -318,14 +306,12 @@ def coma(x, d):
   Solo da formato, sin aplicar el criterio de redondeo; se usa para números
   auxiliares como $t_{95,\nu}$ o $\chi^{2}/\nu$.
   \begin{block}{}
-    \resalta{Empates:} Python lleva los 5 exactos a la cifra par
-    (\cod{round(0.125, 2)} da $0{,}12$), como indica la regla de las
-    diapositivas de teoría de errores.
+    \resalta{Empates:} los 5 exactos van a la cifra par: \cod{round(0.125, 2)}
+    da $0{,}12$.
   \end{block}
   \begin{block}{}
-    \resalta{Caso límite:} $u=0{,}0196$ empieza por 1 y conserva dos cifras,
-    $0{,}020$; tras redondear empieza por 2, pero mantiene las dos. Es poco
-    frecuente y, si aparece, se corrige a mano.
+    \resalta{Caso límite:} $u=0{,}0196$ pasa a $0{,}020$ y conserva dos cifras
+    aunque ahora empiece por 2; se corrige a mano.
   \end{block}
 \end{frame}
 
@@ -403,14 +389,8 @@ n = len(x)
 a = np.polyfit(x, y, 1)[0] if modelo == "libre" else (x @ y) / (x @ x)
   \end{codigo}
   \begin{itemize}
-    \item \cod{np.asarray} convierte las listas en \emph{arrays}, con los que se
-      opera punto a punto: \cod{x * y} multiplica cada $x_i$ por su $y_i$.
-    \item \cod{n = len(x)} cuenta los puntos: $n=6$.
-    \item La iteración necesita una pendiente de partida:
-      \begin{itemize}
-        \item modelo libre: el ajuste sin pesos de \cod{np.polyfit};
-        \item recta por el origen: $a=\sum x_iy_i\big/\sum x_i^{2}$.
-      \end{itemize}
+    \item \cod{np.asarray}: listas a \emph{arrays}, para operar punto a punto.
+    \item Pendiente de partida: el ajuste sin pesos de \cod{np.polyfit}.
   \end{itemize}
   \begin{block}{}
     En el caso~1 la pendiente de partida es $a_{0}=82{,}4$~m/s: el ajuste básico,
@@ -431,11 +411,8 @@ w = 1 / (uy**2 + a**2 * ux**2)
   \begin{itemize}
     \item Un punto con el doble de incertidumbre pesa \resalta{cuatro veces
       menos}: los puntos precisos mandan en la recta.
-    \item ¿Por qué $a^{2}$? Un desplazamiento horizontal $\delta x$ equivale, sobre
-      una recta de pendiente $a$, a uno vertical $a\,\delta x$; sumando ambas
-      contribuciones como varianzas independientes se obtiene $u_i^{2}$.
-    \item Para calcular $w_i$ hace falta $a$, que es justo lo que se busca: por eso
-      hay que \resalta{iterar}.
+    \item ¿Por qué $a^{2}$? Un error horizontal $\delta x$ equivale a uno vertical
+      $a\,\delta x$; como $w_i$ depende de $a$, el cálculo se \resalta{itera}.
   \end{itemize}
 \end{frame}
 
@@ -490,9 +467,7 @@ a_nueva = (m(x * y) - m(x) * m(y)) / (m(x * x) - m(x) ** 2)
   \begin{itemize}
     \item El numerador es una «covarianza» ponderada entre $x$ e $y$, y el
       denominador, una «varianza» ponderada de $x$.
-    \item Con todos los pesos iguales se recuperan las fórmulas básicas de las
-      notas de incertidumbres.
-    \item Para la recta por el origen: \cod{a\_nueva = (w*x*y).sum() / (w*x*x).sum()}.
+    \item Con todos los pesos iguales se recuperan las fórmulas básicas.
   \end{itemize}
 \end{frame}
 
@@ -505,10 +480,8 @@ a = a_nueva
   \end{codigo}
   \begin{columns}[T]
     \begin{column}{0.52\textwidth}
-      \small Si la pendiente nueva apenas difiere de la anterior (una billonésima
-      relativa), el cálculo ha convergido y se sale con \cod{break}; si no, se
-      guarda y se da otra vuelta. \cod{range(500)} es solo un tope de
-      seguridad.
+      \small Si la pendiente apenas cambia (una billonésima relativa), se sale con
+      \cod{break}; si no, se da otra vuelta.
     \end{column}
     \begin{column}{0.44\textwidth}
       \centering\small
@@ -609,9 +582,8 @@ factor = max(1.0, math.sqrt(chi2 / nu)) if nu > 0 else 1.0
 t95 = float(stats.t.ppf(0.975, nu)) if nu > 0 else float("nan")
 return dict(a=a, b=b, ua=ua * factor, Ua=t95 * ua * factor, ...)
   \end{codigo}
-  \cod{stats.t.ppf(0.975, 4)} deja un $2{,}5$\,\% en cada cola, es decir, un
-  intervalo central del 95\,\%: $t_{95,4}=2{,}78$, mayor que el $1{,}96$ de la
-  gaussiana, porque con pocos puntos la propia incertidumbre está mal conocida.
+  \cod{stats.t.ppf(0.975, 4)} da el intervalo central del 95\,\%:
+  $t_{95,4}=2{,}78$, mayor que el $1{,}96$ de la gaussiana porque hay pocos puntos.
   \begin{center}\small
   \begin{tabular}{@{}lll@{}}
     \toprule

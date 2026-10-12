@@ -1,8 +1,8 @@
 \begin{tikzpicture}
-  \begin{axis}[datos, scale only axis, name=principal, width=8.2cm, height=2.7cm,
+  \begin{axis}[datos, scale only axis, name=principal, width=6.3cm, height=2.5cm,
       xmin=-1, xmax=2.6, ymin=-0.45, ymax=0.45, clip=true,
       xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
-      legend pos=north west, ytick={-0.4,-0.2,0,0.2,0.4},
+      legend style={at={(1.04,1)}, anchor=north west, font=\tiny}, ytick={-0.4,-0.2,0,0.2,0.4},
       yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
     \addplot[teorica, domain=-1:2.6, samples=2] {0.34485*x};
     \addlegendentry{$v=\vst\,x$ (valor teórico)}
@@ -16,7 +16,7 @@
       (axis cs:-0.55,-0.3825) -- (axis cs:-0.97,-0.3825);
   \end{axis}
   \begin{axis}[datos, at={(principal.south west)}, anchor=north west, yshift=-4pt,
-      scale only axis, width=8.2cm, height=0.8cm, xmin=-1, xmax=2.6, ymin=-5, ymax=8.5,
+      scale only axis, width=6.3cm, height=0.8cm, xmin=-1, xmax=2.6, ymin=-5, ymax=8.5,
       xlabel={$10^{3}\,x=10^{3}\,(1-\fE/\fR)$}, ylabel={$r_i/u_i$},
       ytick={-3,0,3,6}]
     \addplot[grispizarra, line width=0.5pt, densely dashed, domain=-1:2.6, samples=2] {0};
