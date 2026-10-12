@@ -1,61 +1,77 @@
-\documentclass[aspectratio=169,11pt]{beamer}
+\documentclass[11pt]{beamer}
 
 % =========================================================================
-%  Redondeo y ajuste por mínimos cuadrados ponderados — presentación
-%  Estilo: el del informe «Efecto Doppler con ultrasonidos» (Palatino,
-%  versalitas, azules y grises sobrios) con bloques de código oscuros.
+%  Redondeo y ajuste por mínimos cuadrados ponderados
+%  Plantilla: la de los seminarios del laboratorio (tema Warsaw, 4:3,
+%  títulos en versalitas, bloques redondeados con sombra).
 % =========================================================================
 
-% --- Idioma, codificación y tipografía ------------------------------------
+\usetheme{Warsaw}
+\setbeamertemplate{blocks}[rounded][shadow=true]
+\setbeamerfont{title}{family=\rmfamily, shape=\scshape}
+\setbeamerfont{frametitle}{family=\rmfamily, shape=\scshape}
+\setbeamercolor{block body}{bg=structure.fg!7!bg}
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,right]{author in head/foot}%
+    \usebeamerfont{author in head/foot}Redondeo y ajuste ponderado\hspace*{2ex}
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.5\paperwidth,ht=2.5ex,dp=1.125ex,right]{title in head/foot}%
+    \usebeamerfont{title in head/foot}\insertframenumber\hspace*{2ex}
+  \end{beamercolorbox}}%
+  \vskip0pt}
+
+% --- Idioma y tipografía ------------------------------------------------------
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
-\usepackage{mathpazo}
-\usepackage[scaled=0.84]{beramono}
-\usefonttheme{professionalfonts}
-\usefonttheme{serif}
-\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage[scaled=0.82]{beramono}
 \usepackage{amsmath, amssymb}
 \usepackage{siunitx}
 \sisetup{output-decimal-marker={,}, group-minimum-digits=4, group-separator={\,},
-         per-mode=symbol, separate-uncertainty=true}
+         per-mode=symbol}
 \usepackage{booktabs}
-\usepackage{array}
 
-% --- Paleta del informe ----------------------------------------------------
-\definecolor{azulprof}{HTML}{1B365D}
-\definecolor{azulacero}{HTML}{3B6EA8}
-\definecolor{azulclaro}{HTML}{B7CBE3}
-\definecolor{azulfondo}{HTML}{F3F7FB}
-\definecolor{grispizarra}{HTML}{5B6770}
-\definecolor{grisclaro}{HTML}{E4E8EC}
-\definecolor{acento}{HTML}{B8800A}
-% --- Paleta del código (fondo oscuro, colores de los editores habituales) --
-\definecolor{codfondo}{HTML}{282C34}
-\definecolor{codtexto}{HTML}{ABB2BF}
-\definecolor{codclave}{HTML}{C678DD}   % palabras clave: def, if, return...
-\definecolor{codfunc}{HTML}{61AFEF}    % funciones
-\definecolor{codinterna}{HTML}{56B6C2} % funciones internas: abs, int, max...
-\definecolor{codcadena}{HTML}{98C379}  % cadenas de texto
-\definecolor{codnumero}{HTML}{D19A66}  % números
-\definecolor{codcoment}{HTML}{7F848E}  % comentarios
-\definecolor{codinline}{HTML}{F1EEF0}  % fondo del código en línea
-\definecolor{codrojo}{HTML}{C0365A}    % texto del código en línea
-
-% --- Gráficos ----------------------------------------------------------------
+% --- Gráficos -------------------------------------------------------------------
 \usepackage{tikz}
 \usetikzlibrary{babel, arrows.meta, calc}
 \usepackage{pgfplots}
 \pgfplotsset{compat=1.17}
+\definecolor{azulprof}{HTML}{1B365D}
+\definecolor{azulacero}{HTML}{3B6EA8}
+\definecolor{azulclaro}{HTML}{B7CBE3}
+\definecolor{grispizarra}{HTML}{5B6770}
+\definecolor{grisclaro}{HTML}{E4E8EC}
+\definecolor{acento}{HTML}{B8800A}
 \input{estilos_graficas}
 
-% --- Bloques de código -------------------------------------------------------
+% Logo en la cabecera, como en la plantilla
+\addtobeamertemplate{headline}{}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[anchor=north west, inner sep=0] at ($(current page.north west)+(0.18cm,-0.12cm)$)
+      {\includegraphics[height=0.62cm]{logo_usal_negativo.png}};
+  \end{tikzpicture}}
+
+% --- Código: el mismo aspecto que en las explicaciones -------------------------
 \usepackage{listings}
 \usepackage[most]{tcolorbox}
 \tcbuselibrary{listings}
+\definecolor{codfondo}{HTML}{F7F7F8}
+\definecolor{codborde}{HTML}{DADADF}
+\definecolor{codtexto}{HTML}{383A42}
+\definecolor{codclave}{HTML}{A626A4}   % palabras clave
+\definecolor{codfunc}{HTML}{4078F2}    % funciones
+\definecolor{codinterna}{HTML}{0184BC} % funciones internas
+\definecolor{codcadena}{HTML}{50A14F}  % cadenas
+\definecolor{codnumero}{HTML}{986801}  % números
+\definecolor{codcoment}{HTML}{A0A1A7}  % comentarios
+\definecolor{codinline}{HTML}{F2EFF1}
+\definecolor{codrojo}{HTML}{C0365A}
 \lstdefinestyle{python}{
   language=Python,
-  basicstyle=\ttfamily\small\color{codtexto},
+  basicstyle=\ttfamily\footnotesize\color{codtexto},
   keywordstyle=\color{codclave},
   keywordstyle=[2]\color{codinterna},
   keywordstyle=[3]\color{codfunc},
@@ -65,9 +81,9 @@
                    asarray, ppf, replace},
   stringstyle=\color{codcadena},
   commentstyle=\color{codcoment}\itshape,
-  showstringspaces=false,
+  showstringspaces=false, upquote=true,
   columns=fixed, basewidth=0.5em, keepspaces=true,
-  upquote=true,
+  breaklines=true, breakindent=2em,
   literate=
     {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1 {ñ}{{\~n}}1
     {0}{{\textcolor{codnumero}{0}}}1 {1}{{\textcolor{codnumero}{1}}}1
@@ -77,164 +93,86 @@
     {8}{{\textcolor{codnumero}{8}}}1 {9}{{\textcolor{codnumero}{9}}}1,
 }
 \newtcblisting{codigo}[1][]{%
-  listing only, enhanced, sharp corners, frame hidden,
-  colback=codfondo, boxrule=0pt, arc=3pt, rounded corners,
-  left=8pt, right=8pt, top=4pt, bottom=4pt, before skip=5pt, after skip=7pt,
+  listing only, enhanced, colback=codfondo, colframe=codborde, boxrule=0.5pt,
+  arc=4pt, left=6pt, right=6pt, top=2pt, bottom=2pt,
+  before skip=4pt, after skip=6pt,
   listing options={style=python}, #1}
-% Código en línea, como en las respuestas: texto rojizo sobre fondo claro
-\newcommand{\cod}[1]{{\setlength{\fboxsep}{1.6pt}\colorbox{codinline}{\textcolor{codrojo}{\ttfamily\small #1}}}}
+\newcommand{\cod}[1]{{\setlength{\fboxsep}{1.4pt}\colorbox{codinline}{\textcolor{codrojo}{\ttfamily\small #1}}}}
 
-% --- Cajas en el estilo del informe -------------------------------------------
-\newtcolorbox{destacado}[1][]{%
-  enhanced, sharp corners, frame hidden, colback=azulfondo,
-  borderline west={1.6pt}{0pt}{azulacero},
-  left=9pt, right=8pt, top=3pt, bottom=3pt, before skip=5pt, after skip=6pt,
-  before upper={\ifx\relax#1\relax\else{\scshape\small\color{azulacero}#1}\par\vspace{1pt}\fi}}
-\newtcolorbox{formula}[1][]{%
-  enhanced, sharp corners, colback=azulfondo, colframe=azulclaro, boxrule=0.4pt,
-  left=8pt, right=8pt, top=4pt, bottom=4pt, before skip=5pt, after skip=6pt,
-  attach boxed title to top left={yshift*=-\tcboxedtitleheight/2, xshift=8pt},
-  boxed title style={colback=white, colframe=white, sharp corners, boxrule=0pt,
-                     left=3pt, right=3pt, top=0.5pt, bottom=0.5pt},
-  fonttitle=\bfseries\small\color{azulprof}, coltitle=azulprof, title={#1}}
-
-% --- Tema de la presentación ----------------------------------------------------
-\setbeamertemplate{navigation symbols}{}
-\setbeamercolor{normal text}{fg=black!88}
-\setbeamercolor{structure}{fg=azulprof}
-\setbeamercolor{alerted text}{fg=acento}
-\setbeamerfont{frametitle}{size=\large, shape=\scshape}
-\makeatletter
-\setbeamertemplate{frametitle}{%
-  \vspace*{0.35cm}%
-  \hspace*{0.05cm}{\usebeamerfont{frametitle}\color{azulprof}\insertframetitle}%
-  \ifx\insertframesubtitle\@empty\else
-    \\[-1pt]\hspace*{0.05cm}{\small\itshape\color{grispizarra}\insertframesubtitle}\fi
-  \par\vspace{2pt}{\color{azulclaro}\rule{\textwidth}{0.5pt}}}
-\makeatother
-\setbeamertemplate{itemize item}{\raisebox{1.5pt}{\color{azulacero}\rule{4pt}{4pt}}}
-\setbeamertemplate{itemize subitem}{\color{azulacero}\textendash}
-\setbeamertemplate{enumerate item}{\color{azulacero}\insertenumlabel.}
-\setbeamertemplate{footline}{%
-  \hbox to \paperwidth{\hspace{0.5cm}{\scriptsize\scshape\color{grispizarra}
-    Daniel Martín Guerrero\ \textbar\ Redondeo y ajuste ponderado}\hfill
-    {\scriptsize\color{grispizarra}\insertframenumber}\hspace{0.5cm}}\vspace{0.3cm}}
-\setbeamertemplate{section in toc}{%
-  {\color{azulacero}\inserttocsectionnumber.}\ \inserttocsection}
-\setbeamertemplate{caption}{\raggedright\scriptsize\insertcaption\par}
-
-% Separador de sección
-\AtBeginSection[]{%
-  \begin{frame}[plain]
-    \vfill
-    {\color{azulacero}\scshape\large Parte \thesection}\par\vspace{4pt}
-    {\color{azulprof}\Huge\bfseries\insertsectionhead}\par\vspace{8pt}
-    {\color{azulacero}\rule{2.5cm}{1.4pt}}
-    \vfill
-  \end{frame}}
+% Texto resaltado en azul, como los términos clave de la plantilla
+\newcommand{\resalta}[1]{\textcolor{structure.fg!75!white}{#1}}
 
 \newcommand{\vs}{v_{\mathrm{s}}}
 \newcommand{\vst}{\tilde{v}_{\mathrm{s}}}
 \newcommand{\fE}{f_{\mathrm{E}}}
 \newcommand{\fR}{f_{\mathrm{R}}}
 
-\title{Redondeo y ajuste por mínimos cuadrados ponderados}
-\subtitle{Cómo funciona, línea a línea, el código de nuestras gráficas}
+\title[Redondeo y ajuste ponderado]{Redondeo y ajuste por mínimos cuadrados ponderados}
 \author{Daniel Martín Guerrero}
+\institute{Laboratorio de Mecánica y Ondas, Grado en Física\\Universidad de Salamanca}
 \date{octubre de 2026}
+\titlegraphic{%
+  \begin{tikzpicture}
+    \draw[structure.fg!35!white, line width=0.5pt] (0,0) -- (8,0);
+    \draw[structure.fg!80!white, line width=0.9pt, domain=0:8, samples=320, smooth]
+      plot (\x, {0.22*sin(deg(\x*(2.4+0.55*\x)))});
+  \end{tikzpicture}}
 
 % =========================================================================
 \begin{document}
 
-% ------------------------------------------------------------------ portada
-\begin{frame}[plain]
-  \begin{tikzpicture}[remember picture, overlay]
-    \coordinate (O) at (current page.south west);
-    \begin{scope}
-      \clip (O) rectangle ($(O)+(16cm,9cm)$);
-      \foreach \k in {0,...,11}{
-        \pgfmathsetmacro{\pc}{14+7*\k}
-        \draw[azulprof!\pc!azulclaro, line width=0.35pt]
-          ($(O)+(11.6cm+0.25cm*\k,5.2cm)$) circle (6.2cm-0.48cm*\k);}
-      \fill[azulprof] ($(O)+(11.6cm+0.25cm*11,5.2cm)$) circle (2pt);
-    \end{scope}
-    \fill[white, opacity=0.93] (O) rectangle ($(O)+(10.3cm,9cm)$);
-    \shade[left color=white, right color=white!0, opacity=0.93]
-      ($(O)+(10.3cm,0)$) rectangle ($(O)+(11.6cm,9cm)$);
-    \node[anchor=north west, inner sep=0] at ($(O)+(0.9cm,8.3cm)$)
-      {\includegraphics[height=0.95cm]{Logo USAL.png}};
-    \node[anchor=north west, inner sep=0, text width=9.6cm] at ($(O)+(0.9cm,6.9cm)$)
-      {{\color{azulacero}\scshape\small Laboratorio de Mecánica y Ondas \textbar\ Práctica 8}\\[8pt]
-       {\color{azulprof}\fontsize{20}{24}\selectfont\bfseries Redondeo y ajuste por\\ mínimos cuadrados\\ ponderados}\\[8pt]
-       {\color{grispizarra}\itshape\small Cómo funciona, línea a línea, el código de nuestras gráficas}\\[10pt]
-       {\color{azulacero}\rule{2.2cm}{1.2pt}}\\[8pt]
-       {\large\color{black!85}Daniel Martín Guerrero}\\[2pt]
-       {\small\color{grispizarra}Grado en Física \textbar\ Universidad de Salamanca}\\[1pt]{\small\color{grispizarra}octubre de 2026}};
-  \end{tikzpicture}
+\begin{frame}
+  \titlepage
 \end{frame}
 
-% ------------------------------------------------------------------ índice
-\begin{frame}{Qué vamos a ver}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \tableofcontents
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{destacado}[La idea]
-        Cuando hago una gráfica con ajuste, el código hace dos cosas que conviene
-        entender bien: \textbf{calcula la recta} que mejor describe los datos,
-        teniendo en cuenta lo fiable que es cada punto, y \textbf{presenta el
-        resultado} con el número de cifras correcto.
-      \end{destacado}
-      \small Iré línea a línea, con los números reales del ajuste de la
-      velocidad del sonido (caso 1 del informe), para que cada paso se vea con
-      datos concretos.
-    \end{column}
-  \end{columns}
+\begin{frame}{Índice}
+  \tableofcontents
+\end{frame}
+
+% =========================================================================
+\section{Objetivo}
+% =========================================================================
+\begin{frame}{Objetivo}
+  Cuando hacemos una gráfica con ajuste, el código se encarga de dos tareas:
+  \begin{block}{}
+    \begin{itemize}
+      \item \resalta{Calcular la recta} que mejor describe los datos, teniendo en
+        cuenta lo fiable que es cada punto.
+      \item \resalta{Presentar el resultado} con el número correcto de cifras
+        significativas.
+    \end{itemize}
+  \end{block}
+  Vamos a recorrer el código línea a línea con los números reales del ajuste de
+  la velocidad del sonido (caso~1 del informe): $v$ frente a $x=1-\fE/\fR$.
 \end{frame}
 
 % =========================================================================
 \section{El redondeo}
 % =========================================================================
-
-\begin{frame}{La regla que seguimos}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{formula}[Criterio del informe]
-        \begin{itemize}
-          \item La incertidumbre se da con \textbf{una} cifra significativa.
-          \item Si esa cifra es un \textbf{1}, conservamos \textbf{dos}.
-          \item El valor se redondea a la \textbf{misma posición decimal} que la
-            incertidumbre.
-        \end{itemize}
-      \end{formula}
-      \small Con una sola cifra, $0{,}0118$ quedaría en $0{,}01$ y perderíamos
-      casi un 20\,\% de información; por eso, si empieza por 1, guardamos dos.
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \centering\footnotesize
-      \setlength{\tabcolsep}{4pt}
-      \renewcommand{\arraystretch}{1.3}
-      \begin{tabular}{@{}lcl@{}}
-        \toprule
-        Sin redondear & 1.ª cifra & Resultado\\
-        \midrule
-        $0{,}353\,17 \pm 0{,}011\,8$ & 1 & $0{,}353 \pm 0{,}012$\\
-        $244{,}66 \pm 88{,}6$ & 8 & $(2{,}4 \pm 0{,}9)\times10^{2}$\\
-        $40\,607{,}67 \pm 0{,}357$ & 3 & $40\,607{,}7 \pm 0{,}4$\\
-        \bottomrule
-      \end{tabular}
-      \par\vspace{8pt}
-      \begin{destacado}
-        \small Los dos primeros ejemplos, A ($u=0{,}0118$) y B ($u=88{,}6$),
-        nos acompañarán durante toda esta parte.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+\begin{frame}{Criterio de redondeo}
+  \begin{block}{}
+    \resalta{Criterio del informe:}
+    \begin{itemize}
+      \item la incertidumbre se da con \emph{una} cifra significativa;
+      \item si esa cifra es un 1, se conservan \emph{dos};
+      \item el valor se redondea a la misma posición decimal.
+    \end{itemize}
+  \end{block}
+  \centering\small
+  \begin{tabular}{@{}lcl@{}}
+    \toprule
+    Sin redondear & 1.ª cifra & Resultado\\
+    \midrule
+    A: $0{,}353\,17\pm0{,}011\,8$ & 1 & $0{,}353\pm0{,}012$\\
+    B: $244{,}66\pm88{,}6$ & 8 & $(2{,}4\pm0{,}9)\times10^{2}$\\
+    \bottomrule
+  \end{tabular}
+  \par\vspace{4pt}
+  \raggedright\small Los ejemplos A y B nos acompañarán en toda esta sección.
 \end{frame}
 
-\begin{frame}[fragile]{La función completa}
-  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\footnotesize\color{codtexto}}]
+\begin{frame}[fragile]{La función \texttt{redondea}}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 def redondea(valor, incertidumbre):
     exp = math.floor(math.log10(abs(incertidumbre)))
     primera = int(abs(incertidumbre) / 10**exp)
@@ -243,28 +181,25 @@ def redondea(valor, incertidumbre):
     d = max(decimales, 0)
     return f"{v:.{d}f}".replace(".", ","), f"{u:.{d}f}".replace(".", ",")
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \small Recibe el valor y su incertidumbre \textbf{sin redondear} y
-      devuelve dos textos listos para escribir en el informe.
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \small Los pasos son: localizar la primera cifra, ver si es un 1,
-      decidir dónde cortar, redondear y escribir con coma decimal.
-    \end{column}
-  \end{columns}
+  Recibe el valor y su incertidumbre \resalta{sin redondear} y devuelve dos
+  textos listos para el informe. Los pasos son:
+  \begin{enumerate}
+    \item localizar la primera cifra significativa;
+    \item ver si es un 1;
+    \item decidir dónde cortar;
+    \item redondear y escribir con coma decimal.
+  \end{enumerate}
 \end{frame}
 
-\begin{frame}[fragile]{Paso 1: ¿dónde está la primera cifra?}
+\begin{frame}[fragile]{Paso 1: posición de la primera cifra}
   \begin{codigo}
 exp = math.floor(math.log10(abs(incertidumbre)))
   \end{codigo}
+  El \resalta{logaritmo decimal} responde a la pregunta: \emph{¿a qué número hay
+  que elevar 10 para obtener este?}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \small El \textbf{logaritmo decimal} responde a una pregunta muy concreta:
-      \emph{¿a qué número tengo que elevar 10 para obtener este?}
-      \par\vspace{6pt}\centering
-      \renewcommand{\arraystretch}{1.15}
+    \begin{column}{0.4\textwidth}
+      \centering\small
       \begin{tabular}{@{}rcc@{}}
         \toprule
         Número & Potencia & $\log_{10}$\\
@@ -277,200 +212,150 @@ exp = math.floor(math.log10(abs(incertidumbre)))
         \bottomrule
       \end{tabular}
     \end{column}
-    \begin{column}{0.46\textwidth}
-      \small Si el número cae entre dos potencias, su logaritmo cae entre los
-      dos enteros:
+    \begin{column}{0.56\textwidth}
+      \small Si el número cae entre dos potencias, su logaritmo cae entre los dos
+      enteros:
       \begin{itemize}
-        \item $88{,}6$ está entre 10 y 100: $\log_{10}(88{,}6)\approx 1{,}95$.
-        \item $0{,}0118$ está entre $0{,}01$ y $0{,}1$:
-          $\log_{10}(0{,}0118)\approx -1{,}93$.
+        \item $\log_{10}(88{,}6)\approx 1{,}95$;
+        \item $\log_{10}(0{,}0118)\approx -1{,}93$.
       \end{itemize}
-      \cod{abs(...)} solo garantiza que el número sea positivo, porque el
-      logaritmo de un negativo no existe.
+      \cod{abs(...)} garantiza que el número sea positivo.
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Paso 1: el papel de \texttt{floor}}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \small \cod{math.floor} redondea \textbf{siempre hacia abajo} y se queda
-      con la parte entera, que indica la \textbf{posición de la primera cifra
-      significativa}:
-      \par\vspace{6pt}\centering
-      \renewcommand{\arraystretch}{1.3}
-      \begin{tabular}{@{}lccl@{}}
-        \toprule
-        & $\log_{10}$ & \texttt{floor} & Posición\\
-        \midrule
-        A: $0{,}0118$ & $-1{,}93$ & $-2$ & centésimas ($10^{-2}$)\\
-        B: $88{,}6$ & $1{,}95$ & $1$ & decenas ($10^{1}$)\\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-    \begin{column}{0.44\textwidth}
-      \begin{destacado}[Ojo con los negativos]
-        \small «Hacia abajo» significa \emph{alejándose del cero}: $-1{,}93$ pasa
-        a $-2$, no a $-1$. Y así es como debe ser, porque el 1 de $0{,}0118$
-        está en las centésimas, no en las décimas.
-      \end{destacado}
-      \small A ojo es fácil ver dónde empieza un número; el ordenador no lo
-      «ve», y el logaritmo es la manera matemática de averiguarlo para
-      cualquier valor.
-    \end{column}
-  \end{columns}
+\begin{frame}{Paso 1: el papel de \texttt{floor}}
+  \cod{math.floor} redondea \resalta{siempre hacia abajo} y conserva la parte
+  entera, que indica la posición de la primera cifra significativa:
+  \begin{block}{}
+    \centering
+    \begin{tabular}{@{}lccl@{}}
+      & $\log_{10}$ & \texttt{floor} & Posición\\
+      \midrule
+      A: $0{,}0118$ & $-1{,}93$ & $-2$ & centésimas ($10^{-2}$)\\
+      B: $88{,}6$ & $1{,}95$ & $1$ & decenas ($10^{1}$)\\
+    \end{tabular}
+  \end{block}
+  \begin{itemize}
+    \item En los negativos, «hacia abajo» significa \emph{alejándose del cero}:
+      $-1{,}93$ pasa a $-2$, no a $-1$, y así debe ser, porque el 1 de $0{,}0118$
+      está en las centésimas.
+    \item A ojo es fácil ver dónde empieza un número; el logaritmo es la forma
+      matemática de que el ordenador lo averigüe para cualquier valor.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{Paso 2: ¿cuál es esa cifra?}
+\begin{frame}[fragile]{Paso 2: valor de la primera cifra}
   \begin{codigo}
 primera = int(abs(incertidumbre) / 10**exp)
   \end{codigo}
-  \small Dividir entre $10^{\text{exp}}$ «corre la coma» hasta dejar la primera
-  cifra delante, e \cod{int(...)} corta todo lo que hay detrás:
-  \begin{equation*}
-    \text{A: } \frac{0{,}0118}{10^{-2}} = 1{,}18 \;\longrightarrow\; \mathbf{1},
-    \qquad\qquad
-    \text{B: } \frac{88{,}6}{10^{1}} = 8{,}86 \;\longrightarrow\; \mathbf{8}.
-  \end{equation*}
-  \begin{destacado}
-    \small Ya sabemos dónde está la primera cifra (\texttt{exp}) y cuál es
-    (\texttt{primera}). Con eso basta para aplicar la regla.
-  \end{destacado}
+  Dividir entre $10^{\text{exp}}$ desplaza la coma hasta dejar la primera cifra
+  delante, e \cod{int(...)} corta todo lo que hay detrás:
+  \begin{block}{}
+    \begin{equation}
+      \text{A: }\frac{0{,}0118}{10^{-2}}=1{,}18\;\rightarrow\;1,
+      \qquad
+      \text{B: }\frac{88{,}6}{10^{1}}=8{,}86\;\rightarrow\;8.
+    \end{equation}
+  \end{block}
+  Ya sabemos \resalta{dónde está} la primera cifra (\texttt{exp}) y
+  \resalta{cuál es} (\texttt{primera}): con eso basta para aplicar el criterio.
 \end{frame}
 
-\begin{frame}[fragile]{Paso 3: ¿dónde cortamos?}
+\begin{frame}[fragile]{Paso 3: posición de corte}
   \begin{codigo}
 decimales = -(exp - 1) if primera == 1 else -exp
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \small Aquí vive la regla:
-      \begin{itemize}
-        \item Si la primera cifra es un 1, guardamos \textbf{dos} cifras:
-          cortamos una posición más a la derecha, \cod{-(exp - 1)}.
-        \item Si no, guardamos \textbf{una}: \cod{-exp}.
-      \end{itemize}
-      \small Un número de decimales negativo significa redondear a la izquierda
-      de la coma: $-1$ es «a las decenas».
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \centering\small
-      \renewcommand{\arraystretch}{1.3}
-      \begin{tabular}{@{}lccc@{}}
-        \toprule
-        & \texttt{exp} & \texttt{primera} & \texttt{decimales}\\
-        \midrule
-        A & $-2$ & 1 & $-(-2-1)=3$\\
-        B & $1$ & 8 & $-1$\\
-        \bottomrule
-      \end{tabular}
-      \par\vspace{8pt}
-      \begin{destacado}
-        \small A: tres decimales, hasta las milésimas.\\
-        B: hasta las decenas.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+  \begin{itemize}
+    \item Si la primera cifra es un 1, se conservan \resalta{dos} cifras:
+      se corta una posición más a la derecha, \cod{-(exp - 1)}.
+    \item En otro caso se conserva \resalta{una}: \cod{-exp}.
+  \end{itemize}
+  \begin{block}{}
+    \centering
+    \begin{tabular}{@{}lccc@{}}
+      & \texttt{exp} & \texttt{primera} & \texttt{decimales}\\
+      \midrule
+      A & $-2$ & 1 & $-(-2-1)=3$ \quad (milésimas)\\
+      B & $1$ & 8 & $-1$ \quad (decenas)\\
+    \end{tabular}
+  \end{block}
+  Un número de decimales negativo indica que se redondea a la izquierda de la
+  coma.
 \end{frame}
 
-\begin{frame}[fragile]{Paso 4: redondear y escribir}
-  \begin{codigo}
+\begin{frame}[fragile]{Paso 4: redondeo y escritura}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 v, u = round(valor, decimales), round(incertidumbre, decimales)
 d = max(decimales, 0)
 return f"{v:.{d}f}".replace(".", ","), f"{u:.{d}f}".replace(".", ",")
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \small
-      \begin{itemize}
-        \item \cod{round} redondea valor e incertidumbre \textbf{a la misma
-          posición}, para que sus últimas cifras coincidan.
-        \item \cod{max(decimales, 0)}: si redondeamos a las decenas no hay
-          decimales que escribir, así que usamos 0.
-        \item \cod{f\textquotedbl\{v:.\{d\}f\}\textquotedbl} escribe exactamente \texttt{d} decimales
-          (conserva ceros como el de $0{,}0120$) y \cod{replace} pone la coma.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \centering\small
-      \renewcommand{\arraystretch}{1.3}
-      \begin{tabular}{@{}lll@{}}
-        \toprule
-        & Entrada & Devuelve\\
-        \midrule
-        A & $0{,}353\,17$, $0{,}011\,8$ & \texttt{"0,353"}, \texttt{"0,012"}\\
-        B & $244{,}66$, $88{,}6$ & \texttt{"240"}, \texttt{"90"}\\
-        \bottomrule
-      \end{tabular}
-      \par\vspace{6pt}
-      \small El caso B lo escribimos en el informe como
-      $(2{,}4\pm0{,}9)\times10^{2}$\,m/s.
-    \end{column}
-  \end{columns}
+  \begin{itemize}
+    \item \cod{round} redondea valor e incertidumbre a la \resalta{misma
+      posición}.
+    \item \cod{max(decimales, 0)}: si se redondea a las decenas, no hay
+      decimales que escribir.
+    \item El formato escribe exactamente \texttt{d} decimales y \cod{replace}
+      cambia el punto por la coma.
+  \end{itemize}
+  \begin{block}{}
+    \centering
+    \begin{tabular}{@{}lll@{}}
+      & Entrada & Devuelve\\
+      \midrule
+      A & $0{,}353\,17$; $0{,}011\,8$ & \texttt{0,353} y \texttt{0,012}\\
+      B & $244{,}66$; $88{,}6$ & \texttt{240} y \texttt{90}, es decir,
+      $(2{,}4\pm0{,}9)\times10^{2}$\\
+    \end{tabular}
+  \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{La función \texttt{coma} y dos detalles finos}
+\begin{frame}[fragile]{La función \texttt{coma} y dos detalles}
   \begin{codigo}
 def coma(x, d):
     return f"{x:.{d}f}".replace(".", ",")
   \end{codigo}
-  \small Solo da formato: escribe \texttt{x} con \texttt{d} decimales y coma
-  decimal, sin aplicar ninguna regla. La uso para números auxiliares como
-  $t_{95,\nu}$ o $\chi^{2}/\nu$: \cod{coma(2.5706, 2)} devuelve \texttt{"2,57"}.
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{formula}[Redondeo de los empates]
-        \small Python lleva los 5 exactos a la cifra \emph{par}:
-        \cod{round(0.125, 2)} da $0{,}12$. Coincide con la regla de las
-        diapositivas («si es 5, según sea par o impar»).
-      \end{formula}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{formula}[Un caso límite]
-        \small $u=0{,}0196$ empieza por 1 y conserva dos cifras: $0{,}020$. Tras
-        redondear empieza por 2, pero mantiene las dos. Es raro; si aparece,
-        se ajusta a mano.
-      \end{formula}
-    \end{column}
-  \end{columns}
+  Solo da formato, sin aplicar el criterio de redondeo; se usa para números
+  auxiliares como $t_{95,\nu}$ o $\chi^{2}/\nu$.
+  \begin{block}{}
+    \resalta{Empates:} Python lleva los 5 exactos a la cifra par
+    (\cod{round(0.125, 2)} da $0{,}12$), como indica la regla de las
+    diapositivas de teoría de errores.
+  \end{block}
+  \begin{block}{}
+    \resalta{Caso límite:} $u=0{,}0196$ empieza por 1 y conserva dos cifras,
+    $0{,}020$; tras redondear empieza por 2, pero mantiene las dos. Es poco
+    frecuente y, si aparece, se corrige a mano.
+  \end{block}
 \end{frame}
 
 % =========================================================================
-\section{El ajuste por mínimos cuadrados ponderados}
+\section{El ajuste ponderado}
 % =========================================================================
-
-\begin{frame}{¿Por qué ponderar?}
-  \begin{columns}[T]
-    \begin{column}{0.47\textwidth}
-      \small En el caso 1 ajustamos $v$ frente a $x=1-\fE/\fR$. Cada punto es la
-      media de seis lecturas, con $u^{2}=s^{2}/n+\Delta^{2}/12$, y la $x$ hereda
-      la incertidumbre de las frecuencias. Comparemos las dos:
-      \begin{destacado}
-        \small La incertidumbre horizontal, llevada a la vertical, es
-        \textbf{entre 10 y 150 veces mayor} que la vertical. El ajuste no puede
-        ignorar la $x$, ni tratar igual todos los puntos.
-      \end{destacado}
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering\small
-      \renewcommand{\arraystretch}{1.18}
-      \begin{tabular}{@{}lcc@{}}
-        \toprule
-        Serie & $u(y)$ (m/s) & $a\,u(x)$ (m/s)\\
-        \midrule
-        Máxima, acercamiento & 0,0026 & 0,030\\
-        Máxima, alejamiento & 0,0012 & \textcolor{acento}{\textbf{0,184}}\\
-        Media, acercamiento & 0,0009 & 0,011\\
-        Media, alejamiento & 0,0008 & 0,015\\
-        Mínima, acercamiento & 0,0004 & 0,025\\
-        Mínima, alejamiento & 0,0007 & 0,008\\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-  \end{columns}
+\begin{frame}{Motivación}
+  Cada punto es la media de seis lecturas, con $u^{2}=s^{2}/n+\Delta^{2}/12$, y la
+  abscisa $x=1-\fE/\fR$ hereda la incertidumbre de las frecuencias:
+  \begin{center}\small
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    Serie & $u(y)$ (m/s) & $a\,u(x)$ (m/s)\\
+    \midrule
+    Máxima, acercamiento & 0,0026 & 0,030\\
+    Máxima, alejamiento & 0,0012 & \resalta{0,184}\\
+    Media, acercamiento & 0,0009 & 0,011\\
+    Media, alejamiento & 0,0008 & 0,015\\
+    Mínima, acercamiento & 0,0004 & 0,025\\
+    Mínima, alejamiento & 0,0007 & 0,008\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \begin{block}{}
+    La incertidumbre horizontal, trasladada a la vertical, es entre 10 y 150 veces
+    mayor: el ajuste no puede ignorar la $x$ ni tratar igual todos los puntos.
+  \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{La función completa (I): la iteración}
+\begin{frame}[fragile]{La función \texttt{ajuste\_ponderado} (I)}
   \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 def ajuste_ponderado(x, ux, y, uy, modelo="libre"):
     x, ux, y, uy = (np.asarray(t, float) for t in (x, ux, y, uy))
@@ -491,7 +376,7 @@ def ajuste_ponderado(x, ux, y, uy, modelo="libre"):
   \end{codigo}
 \end{frame}
 
-\begin{frame}[fragile]{La función completa (II): resultados}
+\begin{frame}[fragile]{La función \texttt{ajuste\_ponderado} (II)}
   \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 ue = np.sqrt(uy**2 + a**2 * ux**2)
 w = 1 / ue**2
@@ -511,132 +396,107 @@ t95 = float(stats.t.ppf(0.975, nu)) if nu > 0 else float("nan")
   \end{codigo}
 \end{frame}
 
-\begin{frame}[fragile]{Preparación y pendiente de partida}
-  \begin{codigo}
+\begin{frame}[fragile]{Preparación y pendiente inicial}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 x, ux, y, uy = (np.asarray(t, float) for t in (x, ux, y, uy))
 n = len(x)
 a = np.polyfit(x, y, 1)[0] if modelo == "libre" else (x @ y) / (x @ x)
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \small
+  \begin{itemize}
+    \item \cod{np.asarray} convierte las listas en \emph{arrays}, con los que se
+      opera punto a punto: \cod{x * y} multiplica cada $x_i$ por su $y_i$.
+    \item \cod{n = len(x)} cuenta los puntos: $n=6$.
+    \item La iteración necesita una pendiente de partida:
       \begin{itemize}
-        \item \cod{np.asarray} convierte las listas en \emph{arrays}, con los
-          que se opera punto a punto: \cod{x * y} multiplica cada $x_i$ por su
-          $y_i$.
-        \item \cod{n = len(x)} cuenta los puntos: $n=6$.
+        \item modelo libre: el ajuste sin pesos de \cod{np.polyfit};
+        \item recta por el origen: $a=\sum x_iy_i\big/\sum x_i^{2}$.
       \end{itemize}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \small La iteración necesita una pendiente inicial:
-      \begin{itemize}
-        \item \textbf{libre}: el ajuste sin pesos, \cod{np.polyfit}, que da
-          $a_{0}=82{,}4$\,m/s;
-        \item \textbf{origen}: $a=\sum x_iy_i\big/\sum x_i^{2}$.
-      \end{itemize}
-      \begin{destacado}
-        \small Ese $82{,}4$\,m/s es el ajuste básico del informe, arrastrado
-        por el punto anómalo.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+  \end{itemize}
+  \begin{block}{}
+    En el caso~1 la pendiente de partida es $a_{0}=82{,}4$~m/s: el ajuste básico,
+    arrastrado por el punto anómalo.
+  \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Los pesos: la varianza efectiva}
+\begin{frame}[fragile]{Pesos y varianza efectiva}
   \begin{codigo}
 w = 1 / (uy**2 + a**2 * ux**2)
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{formula}[Peso de cada punto]
-        \begin{equation*}
-          w_i=\frac{1}{u_i^{2}},\qquad u_i^{2}=u^{2}(y_i)+a^{2}u^{2}(x_i)
-        \end{equation*}
-      \end{formula}
-      \small Un punto con el doble de incertidumbre pesa \textbf{cuatro veces
-      menos}: los precisos mandan en la recta.
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \small ¿Por qué $a^{2}$? Si muevo un punto $\delta x$ en horizontal, sobre
-      una recta de pendiente $a$ eso equivale a moverlo $a\,\delta x$ en
-      vertical. Sumando ambas contribuciones como varianzas independientes
-      sale la expresión de la izquierda.
-      \begin{destacado}
-        \small El problema: para calcular $w_i$ necesito $a$, que es justo lo que
-        busco. Por eso hay que iterar.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+  \begin{block}{}
+    \resalta{Peso de cada punto:}
+    \begin{equation}
+      w_i=\frac{1}{u_i^{2}},\qquad u_i^{2}=u^{2}(y_i)+a^{2}\,u^{2}(x_i).
+    \end{equation}
+  \end{block}
+  \begin{itemize}
+    \item Un punto con el doble de incertidumbre pesa \resalta{cuatro veces
+      menos}: los puntos precisos mandan en la recta.
+    \item ¿Por qué $a^{2}$? Un desplazamiento horizontal $\delta x$ equivale, sobre
+      una recta de pendiente $a$, a uno vertical $a\,\delta x$; sumando ambas
+      contribuciones como varianzas independientes se obtiene $u_i^{2}$.
+    \item Para calcular $w_i$ hace falta $a$, que es justo lo que se busca: por eso
+      hay que \resalta{iterar}.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{La media ponderada: ¿qué es \texttt{z}?}
+\begin{frame}[fragile]{La media ponderada}
   \begin{codigo}
 W = w.sum()
 m = lambda z: (w * z).sum() / W
   \end{codigo}
+  \cod{lambda} define una función en una línea; \texttt{z} es solo el nombre de
+  su argumento. \cod{m} calcula la \resalta{media ponderada}:
+  \begin{block}{}
+    \begin{equation}
+      \langle z\rangle=\frac{\sum_i w_i\,z_i}{\sum_i w_i}.
+    \end{equation}
+  \end{block}
   \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \small \cod{lambda} define una función en una línea; \texttt{z} es solo el
-      nombre de su argumento, un \textbf{comodín}. \cod{m} es una máquina de
-      medias ponderadas:
-      \begin{equation*}
-        \langle z\rangle=\frac{\sum_i w_iz_i}{\sum_i w_i}
-      \end{equation*}
-      \small Ejemplo: pesos $(1,1,2)$ y valores $(10,20,40)$ dan
-      $\langle z\rangle=110/4=27{,}5$, más que la media normal ($23{,}3$),
-      porque el 40 pesa el doble.
-    \end{column}
-    \begin{column}{0.48\textwidth}
+    \begin{column}{0.5\textwidth}
       \centering\small
-      \renewcommand{\arraystretch}{1.25}
       \begin{tabular}{@{}llr@{}}
         \toprule
         Llamada & Calcula & Caso 1\\
         \midrule
         \cod{m(x)} & $\langle x\rangle$ & $3{,}27\times10^{-4}$\\
-        \cod{m(y)} & $\langle y\rangle$ & $-0{,}0214$\,m/s\\
-        \cod{m(x * x)} & $\langle x^{2}\rangle$ & $6{,}49\times10^{-7}$\\
-        \cod{m(x * y)} & $\langle xy\rangle$ & $1{,}26\times10^{-4}$\\
+        \cod{m(y)} & $\langle y\rangle$ & $-0{,}0214$\\
+        \cod{m(x*x)} & $\langle x^{2}\rangle$ & $6{,}49\times10^{-7}$\\
+        \cod{m(x*y)} & $\langle xy\rangle$ & $1{,}26\times10^{-4}$\\
         \bottomrule
       \end{tabular}
+    \end{column}
+    \begin{column}{0.46\textwidth}
+      \small Ejemplo: con pesos $(1,1,2)$ y valores $(10,20,40)$,
+      $\langle z\rangle=110/4=27{,}5$, mayor que la media aritmética
+      ($23{,}3$), porque el 40 pesa el doble.
     \end{column}
   \end{columns}
 \end{frame}
 
 \begin{frame}[fragile]{La pendiente ponderada}
-  \begin{codigo}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 a_nueva = (m(x * y) - m(x) * m(y)) / (m(x * x) - m(x) ** 2)
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.52\textwidth}
-      \begin{formula}[Mínimos cuadrados ponderados]
-        \begin{equation*}
-          a=\frac{\langle xy\rangle-\langle x\rangle\langle y\rangle}
-                 {\langle x^{2}\rangle-\langle x\rangle^{2}},
-          \qquad
-          b=\langle y\rangle-a\langle x\rangle
-        \end{equation*}
-      \end{formula}
-      \small Sale de minimizar
-      $\chi^{2}=\sum_i w_i\,(y_i-ax_i-b)^{2}$ respecto de $a$ y $b$. Arriba hay
-      una «covarianza» entre $x$ e $y$; abajo, una «varianza» de $x$, ambas
-      ponderadas.
-    \end{column}
-    \begin{column}{0.44\textwidth}
-      \small Para la recta por el origen la idea es la misma:
-      \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
-a_nueva = (w*x*y).sum() / (w*x*x).sum()
-      \end{codigo}
-      \begin{destacado}
-        \small Sin pesos ($w_i$ iguales) recuperamos las fórmulas básicas de las
-        notas: es el mismo ajuste de siempre, solo que cada punto cuenta según
-        su fiabilidad.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+  \begin{block}{}
+    \resalta{Mínimos cuadrados ponderados:} minimizando
+    $\chi^{2}=\sum_i w_i\,(y_i-ax_i-b)^{2}$ respecto de $a$ y $b$,
+    \begin{equation}
+      a=\frac{\langle xy\rangle-\langle x\rangle\langle y\rangle}
+             {\langle x^{2}\rangle-\langle x\rangle^{2}},
+      \qquad
+      b=\langle y\rangle-a\langle x\rangle .
+    \end{equation}
+  \end{block}
+  \begin{itemize}
+    \item El numerador es una «covarianza» ponderada entre $x$ e $y$, y el
+      denominador, una «varianza» ponderada de $x$.
+    \item Con todos los pesos iguales se recuperan las fórmulas básicas de las
+      notas de incertidumbres.
+    \item Para la recta por el origen: \cod{a\_nueva = (w*x*y).sum() / (w*x*x).sum()}.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{¿Cuándo paramos de iterar?}
+\begin{frame}[fragile]{Criterio de convergencia}
   \begin{codigo}
 if abs(a_nueva - a) <= 1e-12 * max(1.0, abs(a)):
     a = a_nueva
@@ -644,218 +504,163 @@ if abs(a_nueva - a) <= 1e-12 * max(1.0, abs(a)):
 a = a_nueva
   \end{codigo}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \small Si la pendiente nueva apenas difiere de la anterior (una
-      billonésima relativa), ha convergido y salimos con \cod{break}. Si no, la
-      guardamos y damos otra vuelta. El \cod{range(500)} es solo un tope de
+    \begin{column}{0.52\textwidth}
+      \small Si la pendiente nueva apenas difiere de la anterior (una billonésima
+      relativa), el cálculo ha convergido y se sale con \cod{break}; si no, se
+      guarda y se da otra vuelta. \cod{range(500)} es solo un tope de
       seguridad.
-      \begin{destacado}
-        \small El salto de $82$ a $244$\,m/s en la primera vuelta es el efecto de
-        los pesos: el punto anómalo deja de arrastrar la recta.
-      \end{destacado}
     \end{column}
     \begin{column}{0.44\textwidth}
       \centering\small
-      \renewcommand{\arraystretch}{1.3}
       \begin{tabular}{@{}lc@{}}
         \toprule
         Vuelta & $a$ (m/s)\\
         \midrule
-        Inicio (sin pesos) & 82,4\\
+        Inicio & 82,4\\
         1 & 244,279\\
         2 & 244,657\\
-        3 & 244,657 \textcolor{azulacero}{(convergido)}\\
+        3 & 244,657\\
         \bottomrule
       \end{tabular}
     \end{column}
   \end{columns}
+  \begin{block}{}
+    El salto de 82 a 244~m/s en la primera vuelta es el efecto de los pesos: el
+    punto anómalo deja de arrastrar la recta.
+  \end{block}
 \end{frame}
 
-\begin{frame}[fragile]{Los pesos finales: quién manda en la recta}
+\begin{frame}[fragile]{Pesos finales}
   \begin{codigo}
 ue = np.sqrt(uy**2 + a**2 * ux**2)
 w = 1 / ue**2
   \end{codigo}
   \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \centering\small
-      \renewcommand{\arraystretch}{1.15}
-      \begin{tabular}{@{}lcr@{}}
-        \toprule
-        Serie & $u_i$ (m/s) & Peso\\
-        \midrule
-        Mínima, alejamiento & 0,008 & \textbf{51\,\%}\\
-        Media, acercamiento & 0,011 & 26\,\%\\
-        Media, alejamiento & 0,015 & 14\,\%\\
-        Mínima, acercamiento & 0,025 & 5\,\%\\
-        Máxima, acercamiento & 0,030 & 3,5\,\%\\
-        Máxima, alejamiento & 0,184 & \textcolor{acento}{\textbf{0,1\,\%}}\\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \small Con la pendiente ya convergida recalculo la incertidumbre efectiva
-      de cada punto y su peso definitivo.
-      \begin{destacado}
-        \small El punto anómalo prácticamente no cuenta, y las series a
-        velocidad media y mínima, las más precisas, deciden la recta.
-      \end{destacado}
-    \end{column}
+  \begin{column}{0.58\textwidth}
+  \centering\small
+  \begin{tabular}{@{}lcr@{}}
+    \toprule
+    Serie & $u_i$ (m/s) & Peso\\
+    \midrule
+    Mínima, alejamiento & 0,008 & 51\,\%\\
+    Media, acercamiento & 0,011 & 26\,\%\\
+    Media, alejamiento & 0,015 & 14\,\%\\
+    Mínima, acercamiento & 0,025 & 5\,\%\\
+    Máxima, acercamiento & 0,030 & 3,5\,\%\\
+    Máxima, alejamiento & 0,184 & \resalta{0,1\,\%}\\
+    \bottomrule
+  \end{tabular}
+  \end{column}
+  \begin{column}{0.38\textwidth}
+  \small Con la pendiente ya convergida se recalculan la incertidumbre efectiva
+  de cada punto y su peso definitivo.
+  \begin{block}{}
+    \small El punto anómalo prácticamente no cuenta; las series a velocidad media
+    y mínima, las más precisas, deciden la recta.
+  \end{block}
+  \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{La ordenada y las incertidumbres de los parámetros}
-  \begin{codigo}
+\begin{frame}[fragile]{Ordenada e incertidumbres de los parámetros}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 b = m(y) - a * m(x)
 ua = 1 / math.sqrt(W) / math.sqrt(m(x * x) - m(x) ** 2)
 ub = ua * math.sqrt(m(x * x))
 nu = n - 2
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.54\textwidth}
-      \begin{formula}[Notas de incertidumbres, ec.\ (64)]
-        \begin{gather*}
-          u(a)=\frac{1}{\sqrt{\sum_i w_i}\,\sqrt{\langle x^{2}\rangle-\langle x\rangle^{2}}}\\[2pt]
-          u(b)=u(a)\sqrt{\langle x^{2}\rangle}
-        \end{gather*}
-      \end{formula}
-    \end{column}
-    \begin{column}{0.42\textwidth}
-      \footnotesize
-      \begin{itemize}
-        \item $b=\langle y\rangle-a\langle x\rangle$: la recta pasa por el
-          «centro de gravedad» ponderado. Da $b=-0{,}1014$\,m/s.
-        \item $u(a)=7{,}67$\,m/s y $u(b)=0{,}0062$\,m/s: más peso total y más
-          separación en $x$ fijan mejor la pendiente.
-        \item $\nu=6-2=4$, porque estimamos dos parámetros.
-      \end{itemize}
-    \end{column}
-  \end{columns}
+  \begin{block}{}
+    \resalta{Incertidumbres de los parámetros:}
+    \begin{equation}
+      u(a)=\frac{1}{\sqrt{\sum_i w_i}\,\sqrt{\langle x^{2}\rangle-\langle x\rangle^{2}}},
+      \qquad
+      u(b)=u(a)\sqrt{\langle x^{2}\rangle}.
+    \end{equation}
+  \end{block}
+  \small
+  \begin{itemize}
+    \item $b=-0{,}1014$~m/s: la recta pasa por el centro de gravedad ponderado.
+    \item $u(a)=7{,}67$~m/s, $u(b)=0{,}0062$~m/s y $\nu=6-2=4$.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{La bondad del ajuste: $\chi^{2}$}
-  \begin{codigo}
+\begin{frame}[fragile]{Bondad del ajuste: $\chi^{2}$}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 chi2 = float((w * (y - a * x - b) ** 2).sum())
 factor = max(1.0, math.sqrt(chi2 / nu)) if nu > 0 else 1.0
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.5\textwidth}
-      \begin{formula}[Chi-cuadrado]
-        \begin{equation*}
-          \chi^{2}=\sum_i\left(\frac{y_i-ax_i-b}{u_i}\right)^{2}
-        \end{equation*}
-      \end{formula}
-      \small Mide cuántas incertidumbres se separa cada punto de la recta, al
-      cuadrado y sumado. Si las barras están bien estimadas,
-      $\chi^{2}\approx\nu$.
-    \end{column}
-    \begin{column}{0.46\textwidth}
-      \small En el caso 1, $\chi^{2}=69{,}3$ frente a $\nu=4$: unas 17 veces
-      más. Los puntos se dispersan más de lo que dicen sus barras, así que
-      $u(a)=7{,}67$\,m/s es demasiado optimista.
-      \begin{destacado}
-        \small Corregimos con $\sqrt{69{,}3/4}=4{,}16$. El \cod{max(1.0, ...)}
-        hace que la incertidumbre solo se infle, nunca se encoja.
-      \end{destacado}
-    \end{column}
-  \end{columns}
+  \begin{block}{}
+    \begin{equation}
+      \chi^{2}=\sum_i\left(\frac{y_i-ax_i-b}{u_i}\right)^{2}.
+    \end{equation}
+  \end{block}
+  \small
+  \begin{itemize}
+    \item Si las barras de error están bien estimadas, $\chi^{2}\approx\nu$.
+    \item En el caso~1, $\chi^{2}=69{,}3$ frente a $\nu=4$: la dispersión supera lo
+      que indican las barras y $u(a)=7{,}67$~m/s es demasiado optimista.
+    \item Se corrige con $\sqrt{69{,}3/4}=4{,}16$; \cod{max(1.0, ...)} impide que la
+      incertidumbre disminuya.
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[fragile]{La $t$ de Student y lo que devuelve la función}
-  \begin{codigo}
+\begin{frame}[fragile]{La $t$ de Student y el resultado}
+  \begin{codigo}[listing options={style=python, basicstyle=\ttfamily\scriptsize\color{codtexto}}]
 t95 = float(stats.t.ppf(0.975, nu)) if nu > 0 else float("nan")
-return dict(a=a, b=b, ua=ua * factor, ub=ub * factor,
-            Ua=t95 * ua * factor, Ub=t95 * ub * factor, ...)
+return dict(a=a, b=b, ua=ua * factor, Ua=t95 * ua * factor, ...)
   \end{codigo}
-  \begin{columns}[T]
-    \begin{column}{0.46\textwidth}
-      \small \cod{stats.t.ppf(0.975, 4)} da el valor que deja un 2{,}5\,\% en
-      cada cola: un intervalo central del 95\,\%. Con solo 4 grados de
-      libertad, $t_{95,4}=2{,}78$, bastante mayor que el $1{,}96$ de la
-      gaussiana, porque con pocos puntos la propia incertidumbre está mal
-      conocida.
-    \end{column}
-    \begin{column}{0.5\textwidth}
-      \centering\footnotesize
-      \setlength{\tabcolsep}{4pt}
-      \renewcommand{\arraystretch}{1.22}
-      \begin{tabular}{@{}lll@{}}
-        \toprule
-        Clave & Contenido & Caso 1\\
-        \midrule
-        \texttt{a} & pendiente & $244{,}657$\,m/s\\
-        \texttt{ua} & $u(a)$ inflada & $7{,}67\times4{,}16=31{,}9$\,m/s\\
-        \texttt{Ua} & $t_{95,4}\,u(a)$ & $2{,}78\times31{,}9=88{,}6$\,m/s\\
-        \texttt{b}, \texttt{Ub} & ordenada & $-0{,}101\pm0{,}071$\,m/s\\
-        \bottomrule
-      \end{tabular}
-    \end{column}
-  \end{columns}
+  \cod{stats.t.ppf(0.975, 4)} deja un $2{,}5$\,\% en cada cola, es decir, un
+  intervalo central del 95\,\%: $t_{95,4}=2{,}78$, mayor que el $1{,}96$ de la
+  gaussiana, porque con pocos puntos la propia incertidumbre está mal conocida.
+  \begin{center}\small
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    Clave & Contenido & Caso 1\\
+    \midrule
+    \texttt{a} & pendiente & $244{,}657$~m/s\\
+    \texttt{ua} & $u(a)$ corregida & $7{,}67\times4{,}16=31{,}9$~m/s\\
+    \texttt{Ua} & $t_{95,4}\,u(a)$ & $2{,}78\times31{,}9=88{,}6$~m/s\\
+    \texttt{b}, \texttt{Ub} & ordenada & $-0{,}101\pm0{,}071$~m/s\\
+    \bottomrule
+  \end{tabular}
+  \end{center}
 \end{frame}
 
-\begin{frame}{Todo junto: del código al resultado}
-  \begin{columns}[c]
-    \begin{column}{0.64\textwidth}
-      \centering\scriptsize
-      \input{figura_ajuste1}
-    \end{column}
-    \begin{column}{0.33\textwidth}
-      \begin{destacado}[Ajuste 1 --- emisor móvil]
-        \begin{equation*}
-          \vs=(2{,}4\pm0{,}9)\times10^{2}\,\si{\meter\per\second}
-        \end{equation*}
-        \begin{equation*}
-          b=(-0{,}10\pm0{,}07)\,\si{\meter\per\second}
-        \end{equation*}
-        {\scriptsize Al 95\,\%, con $\nu=4$ y $t_{95,4}=2{,}78$.}
-      \end{destacado}
-      \small Los números salen de \cod{ajuste\_ponderado} y su presentación, de
-      \cod{redondea}: $244{,}657\pm88{,}6$ se convierte en
-      $(2{,}4\pm0{,}9)\times10^{2}$.
-    \end{column}
-  \end{columns}
+% =========================================================================
+\section{Resultado}
+% =========================================================================
+\begin{frame}{Del código al resultado}
+  \begin{center}
+    \scriptsize
+    \input{figura_ajuste1}
+  \end{center}
+  \begin{block}{}
+    \centering
+    $\vs=(2{,}4\pm0{,}9)\times10^{2}$~m/s, \qquad $b=(-0{,}10\pm0{,}07)$~m/s\\[1pt]
+    {\footnotesize Incertidumbres ampliadas al 95\,\%, con $\nu=4$.}
+  \end{block}
 \end{frame}
 
-\begin{frame}{En resumen}
-  \begin{columns}[T]
-    \begin{column}{0.48\textwidth}
-      \begin{formula}[El redondeo]
-        \small
-        \begin{enumerate}
-          \item El logaritmo y \texttt{floor} localizan la primera cifra.
-          \item Dividir y truncar nos dice cuál es.
-          \item Si es un 1, guardamos dos cifras; si no, una.
-          \item Valor e incertidumbre se cortan en la misma posición y se
-            escriben con coma decimal.
-        \end{enumerate}
-      \end{formula}
-    \end{column}
-    \begin{column}{0.48\textwidth}
-      \begin{formula}[El ajuste ponderado]
-        \small
-        \begin{enumerate}
-          \item Cada punto pesa $1/u_i^{2}$, con la varianza efectiva.
-          \item Se itera hasta que la pendiente no cambia.
-          \item Se calculan $b$, $u(a)$ y $u(b)$ con medias ponderadas.
-          \item $\chi^{2}/\nu$ nos dice si inflar las incertidumbres.
-          \item La $t$ de Student da el intervalo al 95\,\%.
-        \end{enumerate}
-      \end{formula}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}[plain]
-  \vfill
-  \centering
-  {\color{azulprof}\Huge\bfseries ¡Gracias!}\par\vspace{10pt}
-  {\color{grispizarra}\itshape Nada de esto es magia: son las fórmulas de las notas de
-  incertidumbres,\\ escritas para que el ordenador haga las cuentas por nosotros.}\par\vspace{10pt}
-  {\color{azulacero}\rule{2.2cm}{1.2pt}}\par\vspace{10pt}
-  {\large\color{black!85}Daniel Martín Guerrero}\par\vspace{2pt}
-  {\small\color{grispizarra}Laboratorio de Mecánica y Ondas \textbar\ Grado en Física
-  \textbar\ Universidad de Salamanca}
-  \vfill
+\begin{frame}{Resumen}
+  \begin{block}{}
+    \resalta{Redondeo:}
+    \begin{enumerate}
+      \item el logaritmo y \texttt{floor} localizan la primera cifra;
+      \item dividir y truncar indica cuál es;
+      \item si es un 1 se conservan dos cifras; si no, una;
+      \item valor e incertidumbre se cortan en la misma posición.
+    \end{enumerate}
+  \end{block}
+  \begin{block}{}
+    \resalta{Ajuste ponderado:}
+    \begin{enumerate}
+      \item cada punto pesa $1/u_i^{2}$, con la varianza efectiva;
+      \item se itera hasta que la pendiente no cambia;
+      \item $b$, $u(a)$ y $u(b)$ se calculan con medias ponderadas;
+      \item $\chi^{2}/\nu$ indica si hay que corregir las incertidumbres;
+      \item la $t$ de Student da el intervalo al 95\,\%.
+    \end{enumerate}
+  \end{block}
 \end{frame}
 
 \end{document}
