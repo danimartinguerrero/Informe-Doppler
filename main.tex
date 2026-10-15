@@ -236,6 +236,10 @@
     /pgf/number format/use comma, /pgf/number format/1000 sep={\,},
     scaled ticks=false,
   },
+  % leyenda en una fila sobre el gráfico, para que no tape los datos
+  leyenda arriba/.style={legend columns=-1,
+    legend style={at={(0.5,1.03)}, anchor=south,
+      /tikz/every even column/.append style={column sep=9pt}}},
   puntoA/.style={only marks, mark=*, mark size=2.1pt, azulprof,
     mark options={fill=azulprof, draw=white, line width=0.3pt},
     error bars/.cd, x dir=both, x explicit, y dir=both, y explicit,
@@ -1061,7 +1065,7 @@ las dominantes, de ahí que nos valgamos de la varianza efectiva
   \begin{axis}[datos, name=principal, width=0.86\textwidth, height=6.6cm,
       xmin=-1, xmax=2.6, ymin=-0.45, ymax=0.45, clip=true,
       xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
-      legend pos=north west, ytick={-0.4,-0.2,0,0.2,0.4},
+      leyenda arriba, ytick={-0.4,-0.2,0,0.2,0.4},
       yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
     \addplot[teorica, domain=-1:2.6, samples=2] {0.34485*x};
     \addlegendentry{$v=\vst\,x$ (valor teórico)}
@@ -1153,7 +1157,7 @@ considerarlas poco fiables. Repetimos el ajuste sin ellas (\cref{fig:ajuste1b}):
   \begin{axis}[datos, name=principal2, width=0.86\textwidth, height=6.2cm,
       xmin=-0.7, xmax=1.5, ymin=-0.32, ymax=0.32, clip=true,
       xlabel={}, xticklabels={}, ylabel={$v$ (\si{\meter\per\second})},
-      legend pos=north west, ytick={-0.3,-0.2,-0.1,0,0.1,0.2,0.3},
+      leyenda arriba, ytick={-0.3,-0.2,-0.1,0,0.1,0.2,0.3},
       yticklabel style={/pgf/number format/fixed, /pgf/number format/precision=1}]
     \addplot[teorica, domain=-0.7:1.5, samples=2] {0.34485*x};
     \addlegendentry{$v=\vst\,x$ (valor teórico)}
@@ -1217,7 +1221,7 @@ $\fR=\fE\,x$, tal como predice el modelo (\cref{met:pesos}, con $\nu=n-1$).
   \begin{axis}[datos, name=principal, width=0.86\textwidth, height=6.2cm,
       xmin=-1.35, xmax=1.35, ymin=40330, ymax=40790, clip=true,
       xlabel={}, xticklabels={}, ylabel={$\fR$ (\si{\hertz})},
-      legend pos=north west, ytick={40400,40500,40600,40700},
+      leyenda arriba, ytick={40400,40500,40600,40700},
       yticklabel style={/pgf/number format/1000 sep={\,}}]
     \addplot[teorica, domain=-1.35:1.35, samples=2] {40607.6667*(1+x/1000)};
     \addlegendentry{$\fR=\fE\,x$ ($\fE$ en reposo)}
@@ -1294,7 +1298,7 @@ Mínima & Positivo & \num{-0,1465 +- 0,0008} & \num{40602 +- 3} & \num{-0.425} &
   \begin{axis}[datos, name=principal, width=0.86\textwidth, height=6.2cm,
       xmin=-1.35, xmax=1.35, ymin=40330, ymax=40790, clip=true,
       xlabel={}, xticklabels={}, ylabel={$\fR$ (\si{\hertz})},
-      legend pos=north west, ytick={40400,40500,40600,40700},
+      leyenda arriba, ytick={40400,40500,40600,40700},
       yticklabel style={/pgf/number format/1000 sep={\,}}]
     \addplot[teorica, domain=-1.35:1.35, samples=2] {40607.6667*(1+x/1000)};
     \addlegendentry{$\fR=\fE\,x$ ($\fE$ en reposo)}
@@ -1349,10 +1353,10 @@ están en la última columna de la \cref{tab:mediasR} y se representan en la
 \begin{figure}[ht]
 \centering
 \begin{tikzpicture}
-  \begin{axis}[datos, width=0.86\textwidth, height=6.2cm,
-      xmin=-1.35, xmax=1.35, ymin=-110, ymax=125, clip=true,
-      xlabel={$10^{3}\,(v/\vst)$}, ylabel={$\Delta f$ (\si{\hertz})},
-      legend pos=north west, ytick={-100,-50,0,50,100}]
+  \begin{axis}[datos, name=principal, width=0.86\textwidth, height=7.4cm,
+      xmin=-1.35, xmax=1.35, ymin=-100, ymax=115, clip=true,
+      xlabel={}, xticklabels={}, ylabel={$\Delta f$ (\si{\hertz})},
+      leyenda arriba, ytick={-100,-75,...,100}]
     \addplot[grispizarra, line width=0.5pt, densely dotted, domain=-1.35:1.35, samples=2,
       forget plot] {0};
     \addplot[teorica, domain=-1.35:1.35, samples=60] {-40607.6667*(x/1000)^2/(1-x/1000)};
@@ -1361,12 +1365,23 @@ están en la última columna de la \cref{tab:mediasR} y se representan en la
     \addlegendentry{acercamiento}
     \addplot[puntoB] coordinates {(-1.08018,-75.017) +- (0,19.930) (-0.72882,6.574) +- (0,1.180) (-0.42482,11.577) +- (0,2.761)};
     \addlegendentry{alejamiento}
+    \draw[grispizarra, densely dashed, line width=0.4pt]
+      (axis cs:-0.85,-2) rectangle (axis cs:0.80,32);
+  \end{axis}
+  \begin{axis}[datos, at={(principal.south west)}, anchor=north west, yshift=-10pt,
+      width=0.86\textwidth, height=4.2cm, xmin=-1.35, xmax=1.35, ymin=-2, ymax=32,
+      clip=true, xlabel={$10^{3}\,(v/\vst)$}, ylabel={detalle (\si{\hertz})},
+      ytick={0,10,20,30}]
+    \addplot[teorica, domain=-1.35:1.35, samples=60] {-40607.6667*(x/1000)^2/(1-x/1000)};
+    \addplot[puntoA] coordinates {(0.66212,26.095) +- (0,2.438) (0.40307,19.792) +- (0,2.591)};
+    \addplot[puntoB] coordinates {(-0.72882,6.574) +- (0,1.180) (-0.42482,11.577) +- (0,2.761)};
   \end{axis}
 \end{tikzpicture}
 \caption{Diferencias $\Delta f=\fR-\fE\,(1-v/\vst)^{-1}$ con el receptor en
 movimiento, sin ajuste. Círculos: acercamiento; cuadrados: alejamiento; barras:
 incertidumbre típica. Curva discontinua: término cuadrático predicho,
-$-\fE\,(v/\vs)^{2}/(1-v/\vs)$, que en este rango no supera \SI{0,05}{\hertz}.}
+$-\fE\,(v/\vs)^{2}/(1-v/\vs)$, que en este rango no supera \SI{0,05}{\hertz}.
+Debajo, ampliada, la zona del recuadro con las series de velocidad media y mínima.}
 \label{fig:cuadratico-datos}
 \end{figure}
 
